@@ -31,6 +31,7 @@ const Timeline: React.FC = () => {
             className="mt-6"
           >
             <DetailedCounter />
+            <AlternativeCounter />
             <div className="mt-2 text-stone-500 dark:text-stone-400 font-serif italic text-sm">
               bersamamu...
             </div>
@@ -82,6 +83,7 @@ const DetailedCounter = () => {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
+    // Shared start date - ideally this should be a const constant outside but for now we keep it consistent
     const startDate = new Date("2025-09-09T00:00:00+07:00");
 
     const updateTime = () => {
@@ -115,14 +117,54 @@ const DetailedCounter = () => {
   );
 
   return (
-    <div className="flex justify-center items-center">
-      <TimeUnit value={time.days} label="Days" />
-      <span className="text-rose-300 -mt-4">:</span>
-      <TimeUnit value={time.hours} label="Hrs" />
-      <span className="text-rose-300 -mt-4">:</span>
-      <TimeUnit value={time.minutes} label="Min" />
-      <span className="text-rose-300 -mt-4">:</span>
-      <TimeUnit value={time.seconds} label="Sec" />
+    <div className="flex flex-col items-center">
+      <div className="flex justify-center items-center">
+        <TimeUnit value={time.days} label="Days" />
+        <span className="text-rose-300 -mt-4">:</span>
+        <TimeUnit value={time.hours} label="Hrs" />
+        <span className="text-rose-300 -mt-4">:</span>
+        <TimeUnit value={time.minutes} label="Min" />
+        <span className="text-rose-300 -mt-4">:</span>
+        <TimeUnit value={time.seconds} label="Sec" />
+      </div>
+    </div>
+  );
+};
+
+const AlternativeCounter = () => {
+  const [duration, setDuration] = useState({ months: 0, days: 0 });
+
+  useEffect(() => {
+    const startDate = new Date("2025-09-09T00:00:00+07:00");
+    const now = new Date();
+
+    let months = (now.getFullYear() - startDate.getFullYear()) * 12 + (now.getMonth() - startDate.getMonth());
+    let days = now.getDate() - startDate.getDate();
+
+    if (days < 0) {
+      months--;
+      // Get days in previous month
+      const prevMonthDate = new Date(now.getFullYear(), now.getMonth(), 0);
+      days += prevMonthDate.getDate();
+    }
+
+    // Safety check if date is in future relative to start (should be handled but good to be safe)
+    if (months < 0) {
+      months = 0;
+      days = 0;
+    }
+
+    setDuration({ months, days });
+  }, []);
+
+  return (
+    <div className="flex flex-col items-center mt-3 animate-pulse">
+      <span className="text-[10px] sm:text-xs font-bold tracking-[0.2em] text-stone-400 dark:text-stone-500 mb-2 uppercase">
+        Atau
+      </span>
+      <span className="font-serif italic text-lg sm:text-xl text-rose-400 dark:text-rose-300">
+        {duration.months} Bulan {duration.days} Hari
+      </span>
     </div>
   );
 };

@@ -30,12 +30,18 @@ const SecretMessagePage: React.FC<SecretMessagePageProps> = ({ onBack }) => {
                     transition={{ delay: 0.2 }}
                 >
                     <div className="text-4xl mb-4">🤫</div>
-                    <h2 className="font-serif text-2xl mb-6 text-stone-800 dark:text-rose-100">Hidden Message</h2>
-                    <p className="font-handwriting text-xl leading-relaxed text-stone-700 dark:text-stone-300 mb-8 italic">
-                        "Every day with you is a new favorite day. So this is my new favorite day."
-                    </p>
+                    <h2 className="font-serif text-2xl mb-6 text-stone-800 dark:text-rose-100">Untuk Kamu ❤️</h2>
+                    <div className="font-handwriting text-lg leading-relaxed text-stone-700 dark:text-stone-300 mb-8 italic whitespace-pre-line">
+                        "Hai, Sayang.
+
+                        Cuma mau bilang makasih ya, udah jadi bagian terbaik di hidup aku.
+                        In a world full of noise, you are my favorite quiet spot. Tempat aku ngerasa tenang dan simply be myself.
+
+                        Jangan pernah ragu sama kita ya. I promise to hold your hand through it all, baik hari yang cerah maupun badai sekalipun.
+                        You are my luckiest finding. I love you, heaps!"
+                    </div>
                     <p className="font-sans text-xs text-rose-500 dark:text-rose-400 uppercase tracking-widest mb-8">
-                        - Winnie the Pooh
+                        - Forever Yours
                     </p>
 
                     <button

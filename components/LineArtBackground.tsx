@@ -86,7 +86,7 @@ const LineArtBackground: React.FC<LineArtBackgroundProps> = ({ isDarkMode = fals
   }, []);
 
   return (
-    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden h-full">
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden h-full">
 
       {/* --- NIGHT MODE: Stars & Moon --- */}
       <motion.div
