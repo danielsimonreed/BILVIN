@@ -10,6 +10,8 @@ import MusicPage from './components/MusicPage';
 import SettingsPage from './components/SettingsPage';
 import SecretNotification from './components/SecretNotification';
 import SecretMessagePage from './components/SecretMessagePage';
+import FloatingMusicControl from './components/FloatingMusicControl';
+import { PLAYLIST } from './constants';
 
 type TabType = 'story' | 'gallery' | 'music' | 'settings';
 
@@ -26,6 +28,30 @@ const App: React.FC = () => {
   const [isMenuCollapsed, setIsMenuCollapsed] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Music Player State
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [volume, setVolume] = useState(0.6);
+  const bgAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Music Controls
+  const togglePlay = () => setIsPlaying(!isPlaying);
+  const nextTrack = () => {
+    setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length);
+    setIsPlaying(true);
+  };
+  const prevTrack = () => {
+    setCurrentTrackIndex((prev) => (prev - 1 + PLAYLIST.length) % PLAYLIST.length);
+    setIsPlaying(true);
+  };
+
+  const handleVolumeChange = (newVolume: number) => {
+    setVolume(newVolume);
+    if (bgAudioRef.current) {
+      bgAudioRef.current.volume = newVolume;
+    }
+  };
+
   // Toggle Dark Mode class on body
   useEffect(() => {
     if (isDarkMode) {
@@ -36,6 +62,26 @@ const App: React.FC = () => {
   }, [isDarkMode]);
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
+  // Auto-play music when unlocked
+  useEffect(() => {
+    if (isUnlocked && bgAudioRef.current) {
+      bgAudioRef.current.volume = volume; // Set initial volume
+      bgAudioRef.current.play().catch(e => console.log("Auto-play failed:", e));
+      setIsPlaying(true);
+    }
+  }, [isUnlocked]); // Removed volume dependency to prevent re-triggering play on volume change. Volume is handled in handleVolumeChange or separate effect if needed, but direct ref update is fine for volume.
+
+  // Handle Audio Playback
+  useEffect(() => {
+    if (bgAudioRef.current) {
+      if (isPlaying) {
+        bgAudioRef.current.play().catch(e => console.error("Playback failed", e));
+      } else {
+        bgAudioRef.current.pause();
+      }
+    }
+  }, [isPlaying, currentTrackIndex]);
 
   // Handle scroll to trigger notification
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -50,15 +96,10 @@ const App: React.FC = () => {
       if (scrollPercentage > 0.8) {
         setHasScrolled(true);
         setShowNotification(true);
-        // TODO: Add notification sound here
-        // const audio = new Audio('/notification.mp3');
-        // audio.play().catch(e => console.log('Audio play failed', e));
+        const audio = new Audio('/notification.mp3');
+        audio.play().catch(e => console.log('Audio play failed', e));
       }
     }
-  };
-
-  const handleScrollToTop = () => {
-    scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleNotificationClick = () => {
@@ -78,7 +119,17 @@ const App: React.FC = () => {
       case 'gallery':
         return <Gallery />;
       case 'music':
-        return <MusicPage />;
+        return (
+          <MusicPage
+            isPlaying={isPlaying}
+            onTogglePlay={togglePlay}
+            onNext={nextTrack}
+            onPrev={prevTrack}
+            currentTrackIndex={currentTrackIndex}
+            volume={volume}
+            onVolumeChange={handleVolumeChange}
+          />
+        );
       case 'settings':
         return (
           <SettingsPage
@@ -98,12 +149,22 @@ const App: React.FC = () => {
       scrollRef={scrollRef}
       bottomBar={
         isUnlocked && !showSecretPage ? (
-          <BottomNav
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            isCollapsed={isMenuCollapsed}
-            onExpand={() => setIsMenuCollapsed(false)}
-          />
+          <>
+            {activeTab !== 'music' && (
+              <div className="absolute bottom-24 right-6 z-40 pointer-events-auto">
+                <FloatingMusicControl
+                  isPlaying={isPlaying}
+                  onTogglePlay={togglePlay}
+                />
+              </div>
+            )}
+            <BottomNav
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              isCollapsed={isMenuCollapsed}
+              onExpand={() => setIsMenuCollapsed(false)}
+            />
+          </>
         ) : null
       }
       notification={
@@ -119,6 +180,13 @@ const App: React.FC = () => {
     >
       <LineArtBackground isDarkMode={isDarkMode} />
 
+      {/* Global Background Music Player */}
+      <audio
+        ref={bgAudioRef}
+        src={`/music/${PLAYLIST[currentTrackIndex]?.file}`}
+        onEnded={nextTrack}
+      />
+
       <AnimatePresence mode="wait">
         {!isUnlocked ? (
           <SecretGate key="gate" onUnlock={() => setIsUnlocked(true)} />
@@ -131,5 +199,4 @@ const App: React.FC = () => {
     </MobileFrame>
   );
 };
-
 export default App;
