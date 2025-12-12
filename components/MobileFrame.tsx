@@ -9,9 +9,18 @@ interface MobileFrameProps {
   isDarkMode?: boolean;
   onScroll?: (e: React.UIEvent<HTMLDivElement>) => void;
   scrollRef?: React.RefObject<HTMLDivElement>;
+  textSize?: 'sm' | 'md' | 'lg';
 }
 
-const MobileFrame: React.FC<MobileFrameProps> = ({ children, bottomBar, notification, isDarkMode = false, onScroll, scrollRef }) => {
+const MobileFrame: React.FC<MobileFrameProps> = ({
+  children,
+  bottomBar,
+  notification,
+  isDarkMode = false,
+  onScroll,
+  scrollRef,
+  textSize = 'md'
+}) => {
   const [bursts, setBursts] = useState<BurstProps[]>([]);
 
   const addBurst = (e: React.MouseEvent | React.TouchEvent) => {
@@ -36,8 +45,14 @@ const MobileFrame: React.FC<MobileFrameProps> = ({ children, bottomBar, notifica
     setBursts((prev) => [...prev, newBurst]);
   };
 
+  const textSizeClass = {
+    sm: 'text-sm',
+    md: 'text-base',
+    lg: 'text-lg'
+  }[textSize];
+
   return (
-    <div className={`min-h-screen w-full flex justify-center items-start bg-stone-100 dark:bg-black font-sans text-stone-800 ${isDarkMode ? 'dark' : ''}`}>
+    <div className={`min-h-screen w-full flex justify-center items-start bg-stone-100 dark:bg-black font-sans text-stone-800 ${isDarkMode ? 'dark' : ''} ${textSizeClass}`}>
       {/* Global Particle Container */}
       {bursts.map(burst => (
         <HeartBurst key={burst.id} {...burst} />

@@ -30,7 +30,7 @@ const SecretMessagePage: React.FC<SecretMessagePageProps> = ({ onBack }) => {
                     transition={{ delay: 0.2 }}
                 >
                     <div className="text-4xl mb-4">🤫</div>
-                    <h2 className="font-serif text-2xl mb-6 text-stone-800 dark:text-rose-100">Untuk Kamu ❤️</h2>
+                    <h2 className="font-serif text-2xl mb-6 text-stone-800 dark:text-rose-100">Untuk Cantiknya Akuu ❤️</h2>
                     <div className="font-handwriting text-lg leading-relaxed text-stone-700 dark:text-stone-300 mb-8 italic whitespace-pre-line">
                         "Hai, Sayang.
 

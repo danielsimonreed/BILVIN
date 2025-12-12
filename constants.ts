@@ -1,5 +1,5 @@
 
-export const SECRET_CODE = "bicanosaurus";
+export const SECRET_CODE = "bilqiscantik";
 
 export interface TimelineData {
   id: number;

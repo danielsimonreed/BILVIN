@@ -40,12 +40,15 @@ const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
       transition={{ duration: 0.8 }}
       className="absolute inset-0 z-50 flex flex-col items-center justify-center p-8 text-center backdrop-blur-sm bg-white/30 dark:bg-black/40"
     >
-      <div className="mb-12">
-        <h1 className="font-serif text-5xl text-stone-800 dark:text-rose-50 tracking-tighter mb-2 shadow-sm">
-          BILVIN
+      <div className="mb-8">
+        <h1 className="font-serif text-4xl md:text-5xl text-stone-800 dark:text-stone-100 tracking-tight mb-3 shadow-sm">
+          KEVIN MADIAN
         </h1>
-        <p className="font-sans text-rose-500 dark:text-rose-200 text-sm tracking-widest uppercase font-medium">
-          a tiny love timeline
+        <p className="font-sans text-stone-500 dark:text-stone-400 text-xs md:text-sm tracking-[0.2em] uppercase font-medium mb-6">
+          PORTFOLIO & SHOWCASE
+        </p>
+        <p className="font-sans text-stone-600 dark:text-stone-300 text-sm max-w-md mx-auto leading-relaxed opacity-80">
+          Welcome to my personal space. If you want to know more about me, then insert the secret code below.
         </p>
       </div>
 
@@ -56,7 +59,7 @@ const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-white/80 dark:bg-black/80 backdrop-blur-md p-8 rounded-2xl shadow-2xl max-w-sm w-full border border-rose-100 dark:border-rose-900/30"
+            className="bg-white/80 dark:bg-black/80 backdrop-blur-md p-8 rounded-2xl shadow-2xl max-w-sm w-full border border-stone-100 dark:border-stone-800"
           >
             <motion.div
               initial={{ scale: 0 }}
@@ -64,19 +67,19 @@ const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
               transition={{ type: "spring", stiffness: 200, damping: 10, delay: 0.2 }}
               className="text-4xl mb-4 text-center"
             >
-              💌
+              🔓
             </motion.div>
-            <h3 className="text-xl font-serif text-rose-600 dark:text-rose-300 mb-4 font-medium italic">
-              "SELAMAT.. Kamu berhasil masuk dengan benar.."
+            <h3 className="text-xl font-serif text-stone-800 dark:text-stone-200 mb-4 font-medium italic">
+              "Access Granted"
             </h3>
             <p className="text-stone-600 dark:text-stone-300 text-sm mb-8 leading-relaxed">
-              Welcome to our little world. Everything here is for you.
+              Welcome to the real world.
             </p>
             <button
               onClick={handleEnterMain}
-              className="w-full bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-500 text-white rounded-full py-3 text-sm font-medium tracking-widest transition-all shadow-lg hover:shadow-xl active:scale-95"
+              className="w-full bg-stone-800 hover:bg-black dark:bg-stone-700 dark:hover:bg-stone-600 text-white rounded-full py-3 text-sm font-medium tracking-widest transition-all shadow-lg hover:shadow-xl active:scale-95"
             >
-              SIAP
+              ENTER
             </button>
           </motion.div>
         ) : (
@@ -93,16 +96,16 @@ const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
                 type="text"
                 value={inputCode}
                 onChange={(e) => setInputCode(e.target.value)}
-                placeholder="Enter our secret code..."
-                className="w-full bg-white/70 dark:bg-stone-900/60 border border-rose-200 dark:border-stone-600 rounded-full py-3 px-6 text-center text-stone-700 dark:text-stone-200 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-rose-300 dark:focus:ring-rose-700 focus:bg-white dark:focus:bg-stone-800 transition-all text-sm shadow-lg backdrop-blur-md"
+                placeholder="Enter access code..."
+                className="w-full bg-white/70 dark:bg-stone-900/60 border border-stone-200 dark:border-stone-700 rounded-full py-3 px-6 text-center text-stone-800 dark:text-stone-200 placeholder:text-stone-400 dark:placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-600 focus:bg-white dark:focus:bg-stone-800 transition-all text-sm shadow-lg backdrop-blur-md"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-stone-800 dark:bg-rose-700 text-rose-50 rounded-full py-3 text-sm font-medium tracking-wide hover:bg-stone-700 dark:hover:bg-rose-600 active:scale-95 transition-all shadow-xl hover:shadow-2xl"
+              className="w-full bg-stone-900 dark:bg-white text-white dark:text-black rounded-full py-3 text-sm font-medium tracking-wide hover:bg-stone-800 dark:hover:bg-stone-200 active:scale-95 transition-all shadow-xl hover:shadow-2xl"
             >
-              Unlock
+              Explore Work
             </button>
 
             {error && (
@@ -118,11 +121,7 @@ const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
         )}
       </AnimatePresence>
 
-      <div className="absolute bottom-10 opacity-50 text-rose-500 dark:text-rose-300">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-        </svg>
-      </div>
+
     </motion.div>
   );
 };

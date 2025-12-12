@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, MotionConfig } from 'framer-motion';
 import MobileFrame from './components/MobileFrame';
 import SecretGate from './components/SecretGate';
 import Timeline from './components/Timeline';
@@ -52,6 +52,30 @@ const App: React.FC = () => {
     }
   };
 
+  const [textSize, setTextSize] = useState<'sm' | 'md' | 'lg'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('bilvin-text-size');
+      return (saved as 'sm' | 'md' | 'lg') || 'md';
+    }
+    return 'md';
+  });
+
+  const [reducedMotion, setReducedMotion] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('bilvin-reduced-motion') === 'true';
+    }
+    return false;
+  });
+
+  // Persist settings
+  useEffect(() => {
+    localStorage.setItem('bilvin-text-size', textSize);
+  }, [textSize]);
+
+  useEffect(() => {
+    localStorage.setItem('bilvin-reduced-motion', String(reducedMotion));
+  }, [reducedMotion]);
+
   // Toggle Dark Mode class on body
   useEffect(() => {
     if (isDarkMode) {
@@ -70,7 +94,7 @@ const App: React.FC = () => {
       bgAudioRef.current.play().catch(e => console.log("Auto-play failed:", e));
       setIsPlaying(true);
     }
-  }, [isUnlocked]); // Removed volume dependency to prevent re-triggering play on volume change. Volume is handled in handleVolumeChange or separate effect if needed, but direct ref update is fine for volume.
+  }, [isUnlocked]);
 
   // Handle Audio Playback
   useEffect(() => {
@@ -136,6 +160,10 @@ const App: React.FC = () => {
             isDarkMode={isDarkMode}
             toggleTheme={toggleTheme}
             onLock={() => setIsUnlocked(false)}
+            textSize={textSize}
+            setTextSize={setTextSize}
+            reducedMotion={reducedMotion}
+            setReducedMotion={setReducedMotion}
           />
         );
       default:
@@ -144,59 +172,62 @@ const App: React.FC = () => {
   };
 
   return (
-    <MobileFrame
-      isDarkMode={isDarkMode}
-      scrollRef={scrollRef}
-      bottomBar={
-        isUnlocked && !showSecretPage ? (
-          <>
-            {activeTab !== 'music' && (
-              <div className="absolute bottom-24 right-6 z-40 pointer-events-auto">
-                <FloatingMusicControl
-                  isPlaying={isPlaying}
-                  onTogglePlay={togglePlay}
-                />
-              </div>
-            )}
-            <BottomNav
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-              isCollapsed={isMenuCollapsed}
-              onExpand={() => setIsMenuCollapsed(false)}
+    <MotionConfig reducedMotion={reducedMotion ? "always" : "user"}>
+      <MobileFrame
+        isDarkMode={isDarkMode}
+        scrollRef={scrollRef}
+        textSize={textSize}
+        bottomBar={
+          isUnlocked && !showSecretPage ? (
+            <>
+              {activeTab !== 'music' && (
+                <div className="absolute bottom-24 right-6 z-40 pointer-events-auto">
+                  <FloatingMusicControl
+                    isPlaying={isPlaying}
+                    onTogglePlay={togglePlay}
+                  />
+                </div>
+              )}
+              <BottomNav
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                isCollapsed={isMenuCollapsed}
+                onExpand={() => setIsMenuCollapsed(false)}
+              />
+            </>
+          ) : null
+        }
+        notification={
+          isUnlocked ? (
+            <SecretNotification
+              isVisible={showNotification}
+              onClick={handleNotificationClick}
+              onClose={() => setShowNotification(false)}
             />
-          </>
-        ) : null
-      }
-      notification={
-        isUnlocked ? (
-          <SecretNotification
-            isVisible={showNotification}
-            onClick={handleNotificationClick}
-            onClose={() => setShowNotification(false)}
-          />
-        ) : null
-      }
-      onScroll={handleScroll}
-    >
-      <LineArtBackground isDarkMode={isDarkMode} />
+          ) : null
+        }
+        onScroll={handleScroll}
+      >
+        <LineArtBackground isDarkMode={isDarkMode} />
 
-      {/* Global Background Music Player */}
-      <audio
-        ref={bgAudioRef}
-        src={`/music/${PLAYLIST[currentTrackIndex]?.file}`}
-        onEnded={nextTrack}
-      />
+        {/* Global Background Music Player */}
+        <audio
+          ref={bgAudioRef}
+          src={`/music/${PLAYLIST[currentTrackIndex]?.file}`}
+          onEnded={nextTrack}
+        />
 
-      <AnimatePresence mode="wait">
-        {!isUnlocked ? (
-          <SecretGate key="gate" onUnlock={() => setIsUnlocked(true)} />
-        ) : (
-          <div key="content-area" className="w-full h-full relative">
-            {renderContent()}
-          </div>
-        )}
-      </AnimatePresence>
-    </MobileFrame>
+        <AnimatePresence mode="wait">
+          {!isUnlocked ? (
+            <SecretGate key="gate" onUnlock={() => setIsUnlocked(true)} />
+          ) : (
+            <div key="content-area" className="w-full h-full relative">
+              {renderContent()}
+            </div>
+          )}
+        </AnimatePresence>
+      </MobileFrame>
+    </MotionConfig>
   );
 };
 export default App;
