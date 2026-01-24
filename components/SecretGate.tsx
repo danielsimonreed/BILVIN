@@ -11,6 +11,7 @@ const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
   const [error, setError] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [failedAttempts, setFailedAttempts] = useState(0);
   const controls = useAnimation();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -18,9 +19,11 @@ const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
     if (inputCode.toLowerCase().trim() === SECRET_CODE) {
       setError('');
       setIsSuccess(true);
+      setFailedAttempts(0);
       // Removed immediate onUnlock() call
     } else {
-      setError("Oops, that's not our magic word 🦕");
+      setFailedAttempts(prev => prev + 1);
+      setError("Waduh.. bukan itu passwordnya euy");
       await controls.start({
         x: [0, -10, 10, -10, 10, 0],
         transition: { duration: 0.4 }
@@ -176,6 +179,25 @@ const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
                 className="text-rose-600 dark:text-rose-400 text-xs mt-2 font-medium bg-white/50 dark:bg-black/50 px-3 py-1 rounded-full inline-block"
               >
                 {error}
+              </motion.p>
+            )}
+
+            {failedAttempts >= 3 && (
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-stone-500 dark:text-stone-400 text-xs mt-3 font-medium leading-relaxed text-center"
+              >
+                ngga tau ya passwordnya? huhu kasian.. coba buka ini gih:{' '}
+                <a
+                  href="https://bit.ly/bilqispoho"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-rose-500 dark:text-rose-400 underline hover:text-rose-600 dark:hover:text-rose-300 transition-colors font-semibold"
+                >
+                  https://bit.ly/bilqispoho
+                </a>
               </motion.p>
             )}
           </motion.form>
