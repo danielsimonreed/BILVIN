@@ -40,7 +40,7 @@ const Timeline: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5, delay: 1.5 }}
-            className="fixed bottom-32 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none"
+            className="fixed bottom-32 inset-x-0 z-40 flex flex-col items-center justify-center pointer-events-none"
           >
             {/* Animated arrow */}
             <motion.div
@@ -65,7 +65,7 @@ const Timeline: React.FC = () => {
               className="text-center"
             >
               <p className="text-xs font-medium tracking-widest uppercase text-rose-400 dark:text-rose-300">
-                <span className="hidden sm:inline">Scroll to explore</span>
+                <span className="hidden sm:inline">Hai.. Scroll ke atas yaa Cantik.. 😉</span>
                 <span className="sm:hidden">Swipe up</span>
               </p>
             </motion.div>

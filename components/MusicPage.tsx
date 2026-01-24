@@ -148,28 +148,63 @@ const MusicPage: React.FC<MusicPageProps> = ({
         />
       </motion.div>
 
-      {/* Romantic Note */}
+      {/* Fun Fact Style Note */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7, duration: 0.8 }}
-        className="mt-6 mb-24 max-w-md text-center px-6 py-6 bg-rose-50/50 dark:bg-rose-900/20 rounded-2xl border border-rose-200/50 dark:border-rose-800/30 backdrop-blur-sm"
+        className="mt-8 mb-24 max-w-md w-full"
       >
-        <p className="italic text-stone-600 dark:text-rose-100/80 leading-relaxed text-sm">
-          Aku pilih beberapa lagu <strong className="font-bold text-rose-600 dark:text-rose-300">untuk kamu</strong>:
-        </p>
-        <p className="italic text-stone-600 dark:text-rose-100/80 leading-relaxed text-sm mt-3">
-          "<strong className="font-bold text-rose-600 dark:text-rose-300">anything 4 u</strong>" dan "<strong className="font-bold text-rose-600 dark:text-rose-300">My Sweet Baby</strong>" itu cara aku kaya bilang kalo aku <strong className="font-bold text-rose-600 dark:text-rose-300">selalu ada buat kamu</strong> InsyaAllah..
-        </p>
-        <p className="italic text-stone-600 dark:text-rose-100/80 leading-relaxed text-sm mt-3">
-          Terus "<strong className="font-bold text-rose-600 dark:text-rose-300">The Archer</strong>"… itu lagu favorit kamu dari si teteh, yaa kan? 😛
-        </p>
-        <p className="italic text-stone-600 dark:text-rose-100/80 leading-relaxed text-sm mt-3">
-          karena aku mau jadi <strong className="font-bold text-rose-600 dark:text-rose-300">tempat pulang kamu</strong>, bahkan saat dunia ngga berpihak sama kamu, <strong className="font-bold text-rose-600 dark:text-rose-300">cantik</strong>..
-        </p>
-        <p className="italic text-stone-600 dark:text-rose-100/80 leading-relaxed text-sm mt-3">
-          Dan ngga lupa aku juga tambahin playlist lagu favorit kamu di spotify, yang kamu buat saat kamu jatuh cinta sama seseorang, termasuk aku..
-        </p>
+        {/* Fun Fact Card */}
+        <div className="relative bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-950/40 dark:to-pink-950/30 rounded-3xl border border-rose-200/60 dark:border-rose-800/40 shadow-lg overflow-hidden">
+
+          {/* Decorative Header */}
+          <div className="bg-gradient-to-r from-rose-400 to-pink-400 dark:from-rose-600 dark:to-pink-600 px-6 py-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+              <span className="text-2xl">🎵</span>
+            </div>
+            <div>
+              <h3 className="font-bold text-white text-lg tracking-wide">Fun Fact!</h3>
+              <p className="text-rose-100 text-xs">Tau ngga kenapa aku pilih lagu-lagu ini?</p>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="px-6 py-5 space-y-5">
+            {/* Fact 1 */}
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-rose-100 dark:bg-rose-900/50 flex items-center justify-center">
+                <span className="text-rose-500 dark:text-rose-300 font-bold text-sm">1</span>
+              </div>
+              <p className="text-left text-stone-700 dark:text-rose-100/90 leading-relaxed text-sm">
+                "<strong className="font-semibold text-rose-600 dark:text-rose-300">anything 4 u</strong>" dan "<strong className="font-semibold text-rose-600 dark:text-rose-300">My Sweet Baby</strong>" itu cara aku kaya bilang kalo aku <strong className="font-semibold text-rose-600 dark:text-rose-300">selalu ada buat kamu</strong>, InsyaAllah.. 💝
+              </p>
+            </div>
+
+            {/* Fact 2 */}
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-rose-100 dark:bg-rose-900/50 flex items-center justify-center">
+                <span className="text-rose-500 dark:text-rose-300 font-bold text-sm">2</span>
+              </div>
+              <p className="text-left text-stone-700 dark:text-rose-100/90 leading-relaxed text-sm">
+                "<strong className="font-semibold text-rose-600 dark:text-rose-300">The Archer</strong>"… itu lagu favorit kamu dari si teteh, yaa kan? 😛 Karena aku mau jadi <strong className="font-semibold text-rose-600 dark:text-rose-300">tempat pulang kamu</strong>, bahkan saat dunia ngga berpihak sama kamu, <strong className="font-semibold text-rose-600 dark:text-rose-300">cantik</strong>.. 🏠💕
+              </p>
+            </div>
+
+            {/* Fact 3 */}
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-rose-100 dark:bg-rose-900/50 flex items-center justify-center">
+                <span className="text-rose-500 dark:text-rose-300 font-bold text-sm">3</span>
+              </div>
+              <p className="text-left text-stone-700 dark:text-rose-100/90 leading-relaxed text-sm">
+                Dan ngga lupa aku juga tambahin playlist lagu favorit kamu di Spotify, yang kamu buat saat kamu jatuh cinta sama seseorang… <strong className="font-semibold text-rose-600 dark:text-rose-300">termasuk aku</strong> 🥰
+              </p>
+            </div>
+          </div>
+
+          {/* Bottom accent */}
+          <div className="h-1 bg-gradient-to-r from-rose-400 via-pink-400 to-rose-400 dark:from-rose-600 dark:via-pink-600 dark:to-rose-600" />
+        </div>
       </motion.div>
 
     </motion.div>

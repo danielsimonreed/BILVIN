@@ -41,10 +41,10 @@ const SecretMessagePage: React.FC<SecretMessagePageProps> = ({ onBack }) => {
                         In a world full of noise, you are my favorite quiet spot. Tempat aku ngerasa tenang dan simply be myself.
 
                         Jangan pernah ragu sama kita ya. I promise to hold your hand through it all, baik hari yang cerah maupun badai sekalipun.
-                        You are my luckiest finding. I love you, heaps!"
+                        You are my luckiest finding. I love you, my Sweet Baby!"
                     </div>
                     <p className="font-sans text-xs text-rose-500 dark:text-rose-400 uppercase tracking-widest mb-8">
-                        - Forever Yours
+                        - Kevin
                     </p>
 
                     <div className="flex gap-4 justify-center">
@@ -52,13 +52,13 @@ const SecretMessagePage: React.FC<SecretMessagePageProps> = ({ onBack }) => {
                             onClick={onBack}
                             className="px-6 py-2 rounded-full bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-300 font-medium text-sm hover:bg-stone-300 dark:hover:bg-stone-700 transition-colors"
                         >
-                            Close Secret
+                            Tutup
                         </button>
                         <button
                             onClick={() => setShowMessageForm(true)}
                             className="px-6 py-2 rounded-full bg-rose-500 text-white font-medium text-sm hover:bg-rose-600 shadow-lg shadow-rose-500/20 hover:scale-105 transition-all"
                         >
-                            Reply to Kevin 💌
+                            Balas
                         </button>
                     </div>
                 </motion.div>

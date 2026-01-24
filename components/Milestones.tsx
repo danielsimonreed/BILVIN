@@ -55,7 +55,7 @@ const Milestones: React.FC = () => {
     // Generate WhatsApp message link
     const getWhatsAppLink = () => {
         const formattedDate = formatDateDisplay(selectedDate);
-        const message = `Halo sayangku Kevin yang ganteng! 💕\n\n InsyaAllah aku udah siap buat nikah sama kamu dan aku udah milih tanggal. 💍✨\n\nInsyaAllah aku mau tanggal: ${formattedDate}\n\nAyo kita wujudin impian kita bareng! 🥰\n\n- Bilqis`;
+        const message = `Halo sayangku Kevin yang ganteng! 😛\n\n InsyaAllah aku udah siap buat nikah sama kamu dan aku udah milih tanggal. 💍✨\n\nInsyaAllah aku mau tanggal: ${formattedDate}\n\nAyo lebih semangat lagi untuk bisa nikah sesuai tanggal yang aku pilih! 🥰\n\n- Bilqis`;
         const encodedMessage = encodeURIComponent(message);
         // Replace with your WhatsApp number
         return `https://wa.me/6287780771094?text=${encodedMessage}`;
@@ -149,8 +149,8 @@ const Milestones: React.FC = () => {
                 transition={{ duration: 0.6 }}
                 className="text-center mb-4"
             >
-                <h2 className="font-serif text-3xl text-rose-500 mb-2">Momen Spesial Kita</h2>
-                <p className="text-stone-500 font-sans text-sm">Tanggal-tanggal yang berarti untukku</p>
+                <h2 className="font-serif text-3xl text-white mb-2">Our Special Moments</h2>
+
             </motion.div>
 
             <div className="relative border-l-2 border-rose-200 dark:border-rose-900 ml-4 space-y-8">
