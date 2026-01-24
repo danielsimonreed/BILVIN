@@ -52,7 +52,7 @@ const SecretNotification: React.FC<SecretNotificationProps> = ({ isVisible, onCl
                                 <span className="text-[10px] text-stone-500 dark:text-stone-400">now</span>
                             </div>
                             <p className="text-xs text-stone-600 dark:text-stone-300 truncate">
-                                Slide to dismiss • Tap to open
+                                Geser untuk hapus • Tap untuk buka
                             </p>
                         </div>
                     </div>

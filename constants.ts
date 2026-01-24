@@ -1,5 +1,5 @@
 
-export const SECRET_CODE = "bilqiscantik";
+export const SECRET_CODE = "ruby";
 
 export interface TimelineData {
   id: number;

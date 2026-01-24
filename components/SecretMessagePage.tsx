@@ -5,9 +5,10 @@ import MessageForm from './MessageForm';
 
 interface SecretMessagePageProps {
     onBack: () => void;
+    onOpenVoice: () => void;
 }
 
-const SecretMessagePage: React.FC<SecretMessagePageProps> = ({ onBack }) => {
+const SecretMessagePage: React.FC<SecretMessagePageProps> = ({ onBack, onOpenVoice }) => {
     const [showMessageForm, setShowMessageForm] = React.useState(false);
     return (
         <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-br from-rose-50 to-stone-100 dark:from-slate-900 dark:to-slate-950 relative overflow-hidden">
@@ -47,19 +48,35 @@ const SecretMessagePage: React.FC<SecretMessagePageProps> = ({ onBack }) => {
                         - Kevin
                     </p>
 
-                    <div className="flex gap-4 justify-center">
-                        <button
-                            onClick={onBack}
-                            className="px-6 py-2 rounded-full bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-300 font-medium text-sm hover:bg-stone-300 dark:hover:bg-stone-700 transition-colors"
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="flex gap-4 justify-center">
+                            <button
+                                onClick={onBack}
+                                className="px-6 py-2 rounded-full bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-300 font-medium text-sm hover:bg-stone-300 dark:hover:bg-stone-700 transition-colors"
+                            >
+                                Tutup
+                            </button>
+                            <button
+                                onClick={() => setShowMessageForm(true)}
+                                className="px-6 py-2 rounded-full bg-rose-500 text-white font-medium text-sm hover:bg-rose-600 shadow-lg shadow-rose-500/20 hover:scale-105 transition-all"
+                            >
+                                Balas
+                            </button>
+                        </div>
+
+                        {/* Listen Button */}
+                        <motion.button
+                            onClick={onOpenVoice}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="flex items-center gap-2 px-6 py-2 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-medium text-sm hover:from-pink-600 hover:to-rose-600 shadow-lg shadow-pink-500/30 transition-all"
                         >
-                            Tutup
-                        </button>
-                        <button
-                            onClick={() => setShowMessageForm(true)}
-                            className="px-6 py-2 rounded-full bg-rose-500 text-white font-medium text-sm hover:bg-rose-600 shadow-lg shadow-rose-500/20 hover:scale-105 transition-all"
-                        >
-                            Balas
-                        </button>
+                            <span>Listen</span>
+                            <span className="text-base">💕</span>
+                        </motion.button>
                     </div>
                 </motion.div>
             </motion.div>

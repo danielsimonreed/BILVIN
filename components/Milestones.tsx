@@ -118,7 +118,7 @@ const Milestones: React.FC = () => {
                                 transition={{ delay: 0.3 }}
                                 className="font-serif text-xl text-stone-300 leading-relaxed mb-4"
                             >
-                                baik sayangg..
+                                Huuhuuuu.. baik sayangg.. 😔
                             </motion.p>
                             <motion.p
                                 initial={{ opacity: 0, y: 20 }}

@@ -3,7 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import TimelineStep from './TimelineStep';
 import { TIMELINE_STEPS, CLOSING_MESSAGE } from '../constants';
 
-const Timeline: React.FC = () => {
+interface TimelineProps {
+  onLogout?: () => void;
+  onReadyChange?: (isReady: boolean) => void;
+  hasSeenWelcome?: boolean;
+  onWelcomeSeen?: () => void;
+}
+
+const Timeline: React.FC<TimelineProps> = ({ onLogout, onReadyChange, hasSeenWelcome = false, onWelcomeSeen }) => {
   const [showScrollGuide, setShowScrollGuide] = useState(true);
 
   useEffect(() => {
@@ -23,6 +30,140 @@ const Timeline: React.FC = () => {
       window.removeEventListener('scroll', handleScroll, true);
     };
   }, []);
+
+  // Notify parent when ready state changes (based on hasSeenWelcome)
+  useEffect(() => {
+    if (onReadyChange) {
+      onReadyChange(hasSeenWelcome);
+    }
+  }, [hasSeenWelcome, onReadyChange]);
+
+  const handleReady = () => {
+    if (onWelcomeSeen) {
+      onWelcomeSeen();
+    }
+  };
+
+  const handleNotReady = () => {
+    if (onLogout) {
+      onLogout();
+    }
+  };
+
+  // Welcome Message Section
+  if (!hasSeenWelcome) {
+    return (
+      <motion.div
+        key="welcome-message"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.8 }}
+        className="relative z-10 w-full min-h-full flex flex-col items-center justify-center px-6 py-12"
+      >
+        {/* Decorative Hearts */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mb-6"
+        >
+          <span className="text-4xl">💕</span>
+        </motion.div>
+
+        {/* Welcome Message Container */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="max-w-md mx-auto bg-gradient-to-br from-rose-50/30 to-pink-50/30 dark:from-rose-950/30 dark:to-pink-950/30 backdrop-blur-sm rounded-2xl p-6 border border-rose-200/30 dark:border-rose-800/30 shadow-xl"
+        >
+          <p className="font-serif text-stone-700 dark:text-stone-200 leading-relaxed text-base whitespace-pre-line text-center">
+            <span className="text-rose-500 dark:text-rose-400 font-semibold text-lg">Hai cantik.. 💗</span>
+            {"\n\n"}
+            Sebelumnya aku mau terimakasih karena kamu udah mau buka website ini, dan selamat.. kamu berhasil nemuin website ini.. yeayyyy..
+            {"\n\n"}
+            Aku buat website terbaru ini sebagai bentuk rasa bersyukur karena kamu udah nerima aku jadi partner/pasangan kamu, semoga bisa jadi partner selamanya ya sayangg.. Aaamin.. 🤲
+            {"\n\n"}
+            Terimakasih sayang udah nemenin aku selama ini, buat hari hari aku berarti dan jadi alasan aku untuk terus semangat dan bahagia setiap harinya.. karena ada kamu, aku tau rasanya dicintai sama orang yang tepat, yang selalu support aku, dan selalu berdiri disamping aku, semoga kamu bisa terus nemenin aku achieve hal hal baru dihidup aku nanti yaa sayangg.. ❤️
+            {"\n\n"}
+            So please enjoy the website sayang.. 🌸
+            {"\n"}
+            Semoga kamu suka yaa sama website ini..
+            {"\n\n"}
+            <span className="text-rose-500 dark:text-rose-400 font-semibold italic">I love you so much My Sweet Baby 🤍</span>
+          </p>
+        </motion.div>
+
+        {/* Confirmation Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="mt-8 text-center"
+        >
+          <p className="font-serif text-lg text-stone-700 dark:text-rose-100 mb-6 italic">
+            Apakah kamu udah siap?
+          </p>
+
+          <div className="flex gap-4 justify-center">
+            {/* Siap Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleReady}
+              className="px-8 py-3 rounded-full bg-gradient-to-r from-rose-400 to-pink-500 text-white font-semibold shadow-lg shadow-rose-500/30 hover:shadow-rose-500/50 transition-all duration-300"
+            >
+              Siap
+            </motion.button>
+
+            {/* Belum Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleNotReady}
+              className="px-8 py-3 rounded-full bg-stone-200 dark:bg-stone-700 text-stone-600 dark:text-stone-300 font-semibold shadow-lg hover:bg-stone-300 dark:hover:bg-stone-600 transition-all duration-300"
+            >
+              Belum
+            </motion.button>
+          </div>
+        </motion.div>
+
+        {/* Floating hearts animation */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+        >
+          {[...Array(5)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute text-rose-300/30 dark:text-rose-600/30 text-2xl"
+              initial={{
+                x: Math.random() * 100 + '%',
+                y: '100%',
+                opacity: 0
+              }}
+              animate={{
+                y: '-20%',
+                opacity: [0, 0.8, 0]
+              }}
+              transition={{
+                duration: 8 + Math.random() * 4,
+                repeat: Infinity,
+                delay: i * 2,
+                ease: "linear"
+              }}
+              style={{ left: `${15 + i * 18}%` }}
+            >
+              💗
+            </motion.div>
+          ))}
+        </motion.div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div

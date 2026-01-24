@@ -10,6 +10,7 @@ import MusicPage from './components/MusicPage';
 import SettingsPage from './components/SettingsPage';
 import SecretNotification from './components/SecretNotification';
 import SecretMessagePage from './components/SecretMessagePage';
+import VoiceMessagePage from './components/VoiceMessagePage';
 import FloatingMusicControl from './components/FloatingMusicControl';
 
 import Milestones from './components/Milestones';
@@ -28,7 +29,11 @@ const App: React.FC = () => {
   const [hasScrolled, setHasScrolled] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [showSecretPage, setShowSecretPage] = useState(false);
+  const [showVoicePage, setShowVoicePage] = useState(false);
   const [isMenuCollapsed, setIsMenuCollapsed] = useState(false);
+  const [isTimelineReady, setIsTimelineReady] = useState(false);
+  // Track if user has seen the welcome message (persists across tab changes)
+  const [hasSeenWelcome, setHasSeenWelcome] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Music Player State
@@ -39,6 +44,8 @@ const App: React.FC = () => {
   // Create a persistent Audio instance that lives outside of React's render cycle
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const hasInitializedAudio = useRef(false);
+  // Track if music was playing before pausing for special pages
+  const wasPlayingBeforePause = useRef(false);
 
   // Initialize audio once on mount
   useEffect(() => {
@@ -141,7 +148,7 @@ const App: React.FC = () => {
 
   // Auto-play music when unlocked
   useEffect(() => {
-    if (isUnlocked) {
+    if (isUnlocked && !showSecretPage && !showVoicePage) {
       // Small delay to ensure browser acknowledges the user interaction from the unlock click
       setTimeout(() => {
         setIsPlaying(true);
@@ -149,12 +156,34 @@ const App: React.FC = () => {
     }
   }, [isUnlocked]);
 
+  // Pause/Resume music when secret or voice page is opened/closed
+  useEffect(() => {
+    const isSpecialPageOpen = showSecretPage || showVoicePage;
+
+    if (isSpecialPageOpen) {
+      // Pause music when entering special pages
+      // Check the actual audio element state, not the React state
+      if (audioRef.current && !audioRef.current.paused) {
+        wasPlayingBeforePause.current = true;
+        setIsPlaying(false);
+      }
+    } else {
+      // Resume music when leaving special pages (if it was playing before)
+      if (wasPlayingBeforePause.current) {
+        setTimeout(() => {
+          setIsPlaying(true);
+        }, 100);
+        wasPlayingBeforePause.current = false;
+      }
+    }
+  }, [showSecretPage, showVoicePage]);
+
   // Handle scroll to trigger notification
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
     setIsMenuCollapsed(scrollTop > 50);
 
-    if (!hasScrolled && isUnlocked) {
+    if (!hasScrolled && isUnlocked && isTimelineReady && activeTab === 'story') {
       // Calculate true scroll progress (0 to 1)
       const maxScroll = scrollHeight - clientHeight;
       const scrollPercentage = maxScroll > 0 ? scrollTop / maxScroll : 0;
@@ -175,13 +204,29 @@ const App: React.FC = () => {
 
   // Render the active view
   const renderContent = () => {
+    if (showVoicePage) {
+      return <VoiceMessagePage onBack={() => setShowVoicePage(false)} />;
+    }
+
     if (showSecretPage) {
-      return <SecretMessagePage onBack={() => setShowSecretPage(false)} />;
+      return (
+        <SecretMessagePage
+          onBack={() => setShowSecretPage(false)}
+          onOpenVoice={() => setShowVoicePage(true)}
+        />
+      );
     }
 
     switch (activeTab) {
       case 'story':
-        return <Timeline />;
+        return (
+          <Timeline
+            onLogout={() => setIsUnlocked(false)}
+            onReadyChange={setIsTimelineReady}
+            hasSeenWelcome={hasSeenWelcome}
+            onWelcomeSeen={() => setHasSeenWelcome(true)}
+          />
+        );
       case 'gallery':
         return <Gallery />;
       case 'milestones':
@@ -211,7 +256,14 @@ const App: React.FC = () => {
           />
         );
       default:
-        return <Timeline />;
+        return (
+          <Timeline
+            onLogout={() => setIsUnlocked(false)}
+            onReadyChange={setIsTimelineReady}
+            hasSeenWelcome={hasSeenWelcome}
+            onWelcomeSeen={() => setHasSeenWelcome(true)}
+          />
+        );
     }
   };
 
@@ -224,7 +276,7 @@ const App: React.FC = () => {
         scrollRef={scrollRef}
         textSize={textSize}
         bottomBar={
-          isUnlocked && !showSecretPage ? (
+          isUnlocked && !showSecretPage && !showVoicePage && (activeTab !== 'story' || isTimelineReady) ? (
             <>
               {activeTab !== 'music' && (
                 <motion.div
@@ -253,7 +305,7 @@ const App: React.FC = () => {
           ) : null
         }
         notification={
-          isUnlocked ? (
+          isUnlocked && isTimelineReady ? (
             <SecretNotification
               isVisible={showNotification}
               onClick={handleNotificationClick}
