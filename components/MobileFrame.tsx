@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import HeartBurst, { BurstProps } from './HeartBurst';
+import React from 'react';
+import { motion } from 'framer-motion';
 
 interface MobileFrameProps {
   children: React.ReactNode;
@@ -21,29 +20,6 @@ const MobileFrame: React.FC<MobileFrameProps> = ({
   scrollRef,
   textSize = 'md'
 }) => {
-  const [bursts, setBursts] = useState<BurstProps[]>([]);
-
-  const addBurst = (e: React.MouseEvent | React.TouchEvent) => {
-    // Get coordinates relative to the viewport
-    let clientX, clientY;
-    if ('touches' in e) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = (e as React.MouseEvent).clientX;
-      clientY = (e as React.MouseEvent).clientY;
-    }
-
-    const newBurst: BurstProps = {
-      id: Date.now(),
-      x: clientX,
-      y: clientY,
-      onComplete: (id) => {
-        setBursts((prev) => prev.filter((b) => b.id !== id));
-      },
-    };
-    setBursts((prev) => [...prev, newBurst]);
-  };
 
   const textSizeClass = {
     sm: 'text-sm',
@@ -53,10 +29,6 @@ const MobileFrame: React.FC<MobileFrameProps> = ({
 
   return (
     <div className={`min-h-screen w-full flex justify-center items-start bg-stone-100 dark:bg-black font-sans text-stone-800 ${isDarkMode ? 'dark' : ''} ${textSizeClass}`}>
-      {/* Global Particle Container */}
-      {bursts.map(burst => (
-        <HeartBurst key={burst.id} {...burst} />
-      ))}
 
       {/* 
         Container that simulates a mobile screen on desktop.
@@ -74,7 +46,6 @@ const MobileFrame: React.FC<MobileFrameProps> = ({
         }}
         transition={{ duration: 0.8 }}
         className="w-full max-w-[430px] h-[100dvh] shadow-2xl relative overflow-hidden flex flex-col"
-        onClick={addBurst}
       >
         {/* Main Content Area - Scrollable */}
         <div
