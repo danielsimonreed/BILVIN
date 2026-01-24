@@ -37,7 +37,7 @@ const SecretNotification: React.FC<SecretNotificationProps> = ({ isVisible, onCl
                         {/* Content */}
                         <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-baseline mb-0.5">
-                                <h4 className="font-semibold text-sm text-stone-900 dark:text-stone-100 truncate">New Secret Message</h4>
+                                <h4 className="font-semibold text-sm text-stone-900 dark:text-stone-100 truncate">Kamu Dapet Pesan Baru!</h4>
                                 <span className="text-[10px] text-stone-500 dark:text-stone-400">now</span>
                             </div>
                             <p className="text-xs text-stone-600 dark:text-stone-300 truncate">

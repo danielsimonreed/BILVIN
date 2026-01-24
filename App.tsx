@@ -31,10 +31,62 @@ const App: React.FC = () => {
   // Music Player State
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-  const [volume, setVolume] = useState(0.6);
-  const bgAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [volume, setVolume] = useState(0.4);
 
-  // Music Controls
+  // Create a persistent Audio instance that lives outside of React's render cycle
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const hasInitializedAudio = useRef(false);
+
+  // Initialize audio once on mount
+  useEffect(() => {
+    if (!hasInitializedAudio.current) {
+      audioRef.current = new Audio(`/music/${PLAYLIST[0]?.file}`);
+      audioRef.current.volume = 0.4;
+      audioRef.current.addEventListener('ended', () => {
+        setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length);
+      });
+      hasInitializedAudio.current = true;
+    }
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  // Update audio source when track changes
+  useEffect(() => {
+    if (audioRef.current && hasInitializedAudio.current) {
+      const wasPlaying = !audioRef.current.paused;
+      audioRef.current.src = `/music/${PLAYLIST[currentTrackIndex]?.file}`;
+      audioRef.current.load();
+      if (wasPlaying || isPlaying) {
+        audioRef.current.play().catch(e => console.error("Track change play failed", e));
+      }
+    }
+  }, [currentTrackIndex]);
+
+  // Handle play/pause changes
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.play().catch(e => console.error("Playback failed", e));
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isPlaying]);
+
+  // Handle volume changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
+  // Music Controls - removed bgAudioRef references
   const togglePlay = () => setIsPlaying(!isPlaying);
   const nextTrack = () => {
     setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length);
@@ -47,9 +99,6 @@ const App: React.FC = () => {
 
   const handleVolumeChange = (newVolume: number) => {
     setVolume(newVolume);
-    if (bgAudioRef.current) {
-      bgAudioRef.current.volume = newVolume;
-    }
   };
 
   const [textSize, setTextSize] = useState<'sm' | 'md' | 'lg'>(() => {
@@ -89,23 +138,13 @@ const App: React.FC = () => {
 
   // Auto-play music when unlocked
   useEffect(() => {
-    if (isUnlocked && bgAudioRef.current) {
-      bgAudioRef.current.volume = volume; // Set initial volume
-      bgAudioRef.current.play().catch(e => console.log("Auto-play failed:", e));
-      setIsPlaying(true);
+    if (isUnlocked) {
+      // Small delay to ensure browser acknowledges the user interaction from the unlock click
+      setTimeout(() => {
+        setIsPlaying(true);
+      }, 100);
     }
   }, [isUnlocked]);
-
-  // Handle Audio Playback
-  useEffect(() => {
-    if (bgAudioRef.current) {
-      if (isPlaying) {
-        bgAudioRef.current.play().catch(e => console.error("Playback failed", e));
-      } else {
-        bgAudioRef.current.pause();
-      }
-    }
-  }, [isPlaying, currentTrackIndex]);
 
   // Handle scroll to trigger notification
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -209,13 +248,6 @@ const App: React.FC = () => {
         onScroll={handleScroll}
       >
         <LineArtBackground isDarkMode={isDarkMode} />
-
-        {/* Global Background Music Player */}
-        <audio
-          ref={bgAudioRef}
-          src={`/music/${PLAYLIST[currentTrackIndex]?.file}`}
-          onEnded={nextTrack}
-        />
 
         <AnimatePresence mode="wait">
           {!isUnlocked ? (

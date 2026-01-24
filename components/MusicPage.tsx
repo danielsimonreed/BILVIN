@@ -28,16 +28,16 @@ const MusicPage: React.FC<MusicPageProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="pt-20 px-8 pb-32 h-full flex flex-col items-center"
+      className="pt-20 px-8 pb-32 min-h-full flex flex-col items-center overflow-y-auto"
     >
       <h1 className="font-serif text-3xl text-stone-800 dark:text-rose-50 mb-10">Our Playlist</h1>
 
       {/* Vinyl Record */}
-      <div className="relative w-64 h-64 mb-12">
+      <div className="relative w-48 h-48 mb-8 aspect-square flex-shrink-0">
         <motion.div
           animate={{ rotate: isPlaying ? 360 : 0 }}
           transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatType: "loop" }}
-          className={`w-full h-full rounded-full bg-stone-900 dark:bg-black shadow-2xl flex items-center justify-center border-4 border-stone-800 dark:border-slate-800`}
+          className="w-full h-full aspect-square rounded-full bg-stone-900 dark:bg-black shadow-2xl flex items-center justify-center border-4 border-stone-800 dark:border-slate-800"
         >
           {/* Vinyl Grooves */}
           <div className="absolute inset-2 rounded-full border border-stone-800 opacity-50" />
@@ -128,9 +128,27 @@ const MusicPage: React.FC<MusicPageProps> = ({
         </button>
       </div>
 
-      <p className="mt-auto text-xs text-stone-400/50 italic mb-4">
-        Ensure files are in public/music/
-      </p>
+      {/* Romantic Note */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.8 }}
+        className="mt-8 mb-24 max-w-md text-center px-6 py-6 bg-rose-50/50 dark:bg-rose-900/20 rounded-2xl border border-rose-200/50 dark:border-rose-800/30 backdrop-blur-sm"
+      >
+        <p className="italic text-stone-600 dark:text-rose-100/80 leading-relaxed text-sm">
+          Aku pilih beberapa lagu <strong className="font-bold text-rose-600 dark:text-rose-300">untuk kamu</strong>:
+        </p>
+        <p className="italic text-stone-600 dark:text-rose-100/80 leading-relaxed text-sm mt-3">
+          "<strong className="font-bold text-rose-600 dark:text-rose-300">anything 4 u</strong>" dan "<strong className="font-bold text-rose-600 dark:text-rose-300">My Sweet Baby</strong>" itu cara aku kaya bilang kalo aku <strong className="font-bold text-rose-600 dark:text-rose-300">selalu ada buat kamu</strong> InsyaAllah..
+        </p>
+        <p className="italic text-stone-600 dark:text-rose-100/80 leading-relaxed text-sm mt-3">
+          Terus "<strong className="font-bold text-rose-600 dark:text-rose-300">The Archer</strong>"… itu lagu favorit kamu dari si teteh, yaa kan? 😛
+        </p>
+        <p className="italic text-stone-600 dark:text-rose-100/80 leading-relaxed text-sm mt-3">
+          karena aku mau jadi <strong className="font-bold text-rose-600 dark:text-rose-300">tempat pulang kamu</strong>, bahkan saat dunia ngga berpihak sama kamu, <strong className="font-bold text-rose-600 dark:text-rose-300">cantik</strong>..
+        </p>
+      </motion.div>
+
     </motion.div>
   );
 };

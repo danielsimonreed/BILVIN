@@ -73,7 +73,7 @@ const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
               "Access Granted"
             </h3>
             <p className="text-stone-600 dark:text-stone-300 text-sm mb-8 leading-relaxed">
-              Welcome to the real world.
+              Welcome to the world of BILVIN.
             </p>
             <button
               onClick={handleEnterMain}

@@ -15,7 +15,7 @@ export const TIMELINE_STEPS: TimelineData[] = [
     id: 1,
     heading: "Awal cerita kita",
     text: "9 September 2025. Hari itu mungkin kelihatan biasa buat orang lain, tapi buat aku, itu hari dimana semesta rasanya berpihak sama aku. Saat kamu bilang 'iya', rasanya kayak ada kepingan puzzle yang akhirnya ketemu rumahnya.",
-    image: "/images/photos1.jpg",
+    image: "/images/photos3.jpg",
     caption: "The start of our chapter.",
     secretMessage: "I love you so much ❤️"
   },
@@ -123,23 +123,18 @@ export interface Song {
 
 export const PLAYLIST: Song[] = [
   {
+    title: "anything 4 u",
+    artist: "LANY",
+    file: "LANY_anything_4_u.mp3"
+  },
+  {
+    title: "The Archer",
+    artist: "Taylor Swift",
+    file: "Taylor Swift - The Archer.mp3"
+  },
+  {
     title: "My Sweet Baby",
     artist: "ONE OK ROCK",
     file: "ONE OK ROCK - My Sweet Baby.mp3"
-  },
-  {
-    title: "Sempurna",
-    artist: "Andra & The Backbone",
-    file: "Andra & The Backbone - Sempurna.mp3"
-  },
-  {
-    title: "Bukti",
-    artist: "Virgoun",
-    file: "Virgoun - Bukti.mp3"
-  },
-  {
-    title: "Teman Hidup",
-    artist: "Tulus",
-    file: "Tulus - Teman Hidup.mp3"
   }
 ];
