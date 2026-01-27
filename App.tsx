@@ -11,16 +11,19 @@ import SettingsPage from './components/SettingsPage';
 import SecretNotification from './components/SecretNotification';
 import SecretMessagePage from './components/SecretMessagePage';
 import VoiceMessagePage from './components/VoiceMessagePage';
-import FloatingMusicControl from './components/FloatingMusicControl';
+
+import { UserProvider } from './contexts/UserContext';
 
 import Milestones from './components/Milestones';
-import { PLAYLIST } from './constants';
+import WishlistPage from './components/WishlistPage';
+import { PLAYLIST, UserType } from './constants';
 
-type TabType = 'story' | 'gallery' | 'milestones' | 'music' | 'settings';
+type TabType = 'story' | 'gallery' | 'milestones' | 'wishlist' | 'music' | 'settings';
 
 const App: React.FC = () => {
 
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('story');
   // Set default to TRUE for Dark Mode
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -231,6 +234,8 @@ const App: React.FC = () => {
         return <Gallery />;
       case 'milestones':
         return <Milestones />;
+      case 'wishlist':
+        return <WishlistPage currentUser={currentUser} />;
       case 'music':
         return (
           <MusicPage
@@ -248,7 +253,12 @@ const App: React.FC = () => {
           <SettingsPage
             isDarkMode={isDarkMode}
             toggleTheme={toggleTheme}
-            onLock={() => setIsUnlocked(false)}
+            onLock={() => {
+              setCurrentUser(null);
+              setIsUnlocked(false);
+              setHasSeenWelcome(false);
+              setActiveTab('story');
+            }}
             textSize={textSize}
             setTextSize={setTextSize}
             reducedMotion={reducedMotion}
@@ -277,31 +287,12 @@ const App: React.FC = () => {
         textSize={textSize}
         bottomBar={
           isUnlocked && !showSecretPage && !showVoicePage && (activeTab !== 'story' || isTimelineReady) ? (
-            <>
-              {activeTab !== 'music' && (
-                <motion.div
-                  initial={{ opacity: 1, y: 0 }}
-                  animate={{
-                    opacity: isMenuCollapsed ? 0 : 1,
-                    y: isMenuCollapsed ? 100 : 0,
-                    pointerEvents: isMenuCollapsed ? 'none' : 'auto'
-                  }}
-                  transition={{ duration: 0.3, ease: 'easeInOut' }}
-                  className="absolute bottom-24 right-6 z-40"
-                >
-                  <FloatingMusicControl
-                    isPlaying={isPlaying}
-                    onTogglePlay={togglePlay}
-                  />
-                </motion.div>
-              )}
-              <BottomNav
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-                isCollapsed={isMenuCollapsed}
-                onExpand={() => setIsMenuCollapsed(false)}
-              />
-            </>
+            <BottomNav
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              isCollapsed={isMenuCollapsed}
+              onExpand={() => setIsMenuCollapsed(false)}
+            />
           ) : null
         }
         notification={
@@ -319,7 +310,10 @@ const App: React.FC = () => {
 
         <AnimatePresence mode="wait">
           {!isUnlocked ? (
-            <SecretGate key="gate" onUnlock={() => setIsUnlocked(true)} />
+            <SecretGate key="gate" onUnlock={(user: UserType) => {
+              setCurrentUser(user);
+              setIsUnlocked(true);
+            }} />
           ) : (
             <div key="content-area" className="w-full h-full relative">
               {renderContent()}

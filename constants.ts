@@ -1,4 +1,29 @@
 
+// User Authentication
+export type UserType = 'bilqis' | 'kevin';
+
+export interface UserCredential {
+  password: string;
+  displayName: string;
+}
+
+export const USER_CREDENTIALS: Record<UserType, UserCredential> = {
+  bilqis: { password: 'ruby', displayName: 'Bilqis' },
+  kevin: { password: 'wibowo', displayName: 'Kevin' }
+};
+
+// Helper function to authenticate and get user type
+export const authenticateUser = (code: string): UserType | null => {
+  const normalizedCode = code.toLowerCase().trim();
+  for (const [userType, credential] of Object.entries(USER_CREDENTIALS)) {
+    if (credential.password === normalizedCode) {
+      return userType as UserType;
+    }
+  }
+  return null;
+};
+
+// Legacy export for backward compatibility (remove after full migration)
 export const SECRET_CODE = "ruby";
 
 export interface TimelineData {
@@ -156,5 +181,143 @@ export const PLAYLIST: Song[] = [
     title: "My Sweet Baby",
     artist: "ONE OK ROCK",
     file: "ONE_OK_ROCK_My_Sweet_Baby.mp3"
+  }
+];
+
+// Wishlist Feature Types
+export interface WishlistItem {
+  id: string;
+  category: 'travel' | 'couple' | 'life';
+  emoji: string;
+  title: string;
+  description: string;
+  completed: boolean;
+}
+
+export interface TravelPin {
+  id: string;
+  country: string;
+  flag: string;
+  note: string;
+  coordinates: { x: number; y: number }; // percentage position on map
+}
+
+export const DEFAULT_TRAVEL_PINS: TravelPin[] = [
+  {
+    id: 'pin-1',
+    country: 'Italy',
+    flag: '🇮🇹',
+    note: 'Honeymoon destination? 💕',
+    coordinates: { x: 51, y: 35 }
+  },
+  {
+    id: 'pin-2',
+    country: 'Japan',
+    flag: '🇯🇵',
+    note: 'Cherry blossom trip! 🌸',
+    coordinates: { x: 82, y: 38 }
+  },
+  {
+    id: 'pin-3',
+    country: 'France',
+    flag: '🇫🇷',
+    note: 'City of love, Paris! 🗼',
+    coordinates: { x: 48, y: 32 }
+  },
+  {
+    id: 'pin-4',
+    country: 'Maldives',
+    flag: '🇲🇻',
+    note: 'Anniversary getaway 🏝️',
+    coordinates: { x: 65, y: 52 }
+  },
+  {
+    id: 'pin-5',
+    country: 'South Korea',
+    flag: '🇰🇷',
+    note: 'K-Drama trip together! 🎬',
+    coordinates: { x: 80, y: 40 }
+  },
+  {
+    id: 'pin-6',
+    country: 'Switzerland',
+    flag: '🇨🇭',
+    note: 'Swiss Alps adventure ⛰️',
+    coordinates: { x: 50, y: 33 }
+  }
+];
+
+export const DEFAULT_WISHLIST: WishlistItem[] = [
+  {
+    id: 'wish-1',
+    category: 'travel',
+    emoji: '✈️',
+    title: 'Honeymoon ke Bali',
+    description: 'Romantic beach getaway bareng kamu',
+    completed: false
+  },
+  {
+    id: 'wish-2',
+    category: 'travel',
+    emoji: '🗼',
+    title: 'Lihat Menara Eiffel',
+    description: 'Dinner romantis di Paris',
+    completed: false
+  },
+  {
+    id: 'wish-3',
+    category: 'travel',
+    emoji: '🌸',
+    title: 'Lihat Sakura di Jepang',
+    description: 'Cherry blossom season bareng kamu',
+    completed: false
+  },
+  {
+    id: 'wish-4',
+    category: 'couple',
+    emoji: '💍',
+    title: 'Menikah',
+    description: 'Milestone terbesar kita, InshaAllah',
+    completed: false
+  },
+  {
+    id: 'wish-5',
+    category: 'couple',
+    emoji: '📸',
+    title: 'Pre-wedding Photoshoot',
+    description: 'Bikin kenangan indah sebelum hari H',
+    completed: false
+  },
+  {
+    id: 'wish-6',
+    category: 'couple',
+    emoji: '💑',
+    title: 'Date Night Rutin',
+    description: 'Quality time bareng minimal sekali seminggu',
+    completed: false
+  },
+  {
+    id: 'wish-7',
+    category: 'life',
+    emoji: '🏠',
+    title: 'Beli Rumah Pertama',
+    description: 'Tempat nyaman untuk kita berdua',
+    completed: false
+  },
+  {
+    id: 'wish-8',
+    category: 'life',
+    emoji: '🐱',
+    title: 'Adopsi Kucing',
+    description: 'Anggota keluarga berbulu!',
+    completed: false
+  },
+  {
+    id: 'wish-9',
+    category: 'life',
+    emoji: '👶',
+    title: 'Punya Anak',
+    description: 'Membesarkan keluarga kecil kita',
+    completed: false
   }
 ];

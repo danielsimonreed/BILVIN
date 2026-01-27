@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-type TabType = 'story' | 'gallery' | 'milestones' | 'music' | 'settings';
+type TabType = 'story' | 'gallery' | 'milestones' | 'wishlist' | 'music' | 'settings';
 
 interface BottomNavProps {
   activeTab: TabType;
@@ -21,7 +21,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
       id: 'story',
       label: 'Story',
       icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
           <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z" />
         </svg>
       )
@@ -30,7 +30,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
       id: 'gallery',
       label: 'Gallery',
       icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
           <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
         </svg>
       )
@@ -39,8 +39,17 @@ const BottomNav: React.FC<BottomNavProps> = ({
       id: 'milestones',
       label: 'Milestones',
       icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
           <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5z" />
+        </svg>
+      )
+    },
+    {
+      id: 'wishlist',
+      label: 'Wishlist',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
         </svg>
       )
     },
@@ -48,7 +57,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
       id: 'music',
       label: 'Music',
       icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z" />
         </svg>
       )
@@ -57,7 +66,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
       id: 'settings',
       label: 'Settings',
       icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
           <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L3.15 8.87c-.11.2-.06.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.11-.22.06-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
         </svg>
       )
@@ -65,7 +74,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
   ];
 
   return (
-    <div className="w-full flex justify-center pb-6 pt-2 px-6 pointer-events-none">
+    <div className="w-full flex justify-center pb-6 pt-2 px-4 pointer-events-none">
       <AnimatePresence mode="wait">
         {!isCollapsed ? (
           <motion.div
@@ -74,7 +83,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 20, opacity: 0, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="pointer-events-auto bg-white/10 dark:bg-black/20 backdrop-blur-xl backdrop-saturate-150 border border-white/20 dark:border-white/10 rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.1)] px-6 py-3 flex items-center gap-8 md:gap-10"
+            className="pointer-events-auto bg-white/10 dark:bg-black/20 backdrop-blur-xl backdrop-saturate-150 border border-white/20 dark:border-white/10 rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.1)] px-3 py-2.5 flex items-center gap-3 md:gap-5"
           >
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
@@ -82,7 +91,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
                 <button
                   key={tab.id}
                   onClick={() => onTabChange(tab.id)}
-                  className="relative flex flex-col items-center justify-center gap-1 w-10 h-10 group"
+                  className="relative flex flex-col items-center justify-center w-8 h-8 group"
                   aria-label={tab.label}
                 >
                   <div

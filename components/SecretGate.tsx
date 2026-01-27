@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { motion, useAnimation, AnimatePresence } from 'framer-motion';
-import { SECRET_CODE } from '../constants';
+import { authenticateUser, USER_CREDENTIALS, UserType } from '../constants';
 
 interface SecretGateProps {
-  onUnlock: () => void;
+  onUnlock: (user: UserType) => void;
 }
 
 const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
@@ -12,15 +12,17 @@ const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [failedAttempts, setFailedAttempts] = useState(0);
+  const [authenticatedUser, setAuthenticatedUser] = useState<UserType | null>(null);
   const controls = useAnimation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (inputCode.toLowerCase().trim() === SECRET_CODE) {
+    const user = authenticateUser(inputCode);
+    if (user) {
       setError('');
       setIsSuccess(true);
       setFailedAttempts(0);
-      // Removed immediate onUnlock() call
+      setAuthenticatedUser(user);
     } else {
       setFailedAttempts(prev => prev + 1);
       setError("Waduh.. bukan itu passwordnya euy");
@@ -32,8 +34,11 @@ const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
   };
 
   const handleEnterMain = () => {
-    onUnlock();
+    if (authenticatedUser) {
+      onUnlock(authenticatedUser);
+    }
   };
+
 
   return (
     <motion.div
@@ -73,14 +78,14 @@ const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
             <div className="absolute bottom-12 left-8 text-rose-300 dark:text-rose-400 text-xs opacity-50">✦</div>
             <div className="absolute bottom-6 right-6 text-rose-300 dark:text-rose-400 text-sm opacity-30">✧</div>
 
-            {/* Animated unlock icon */}
+            {/* Animated unlock icon - show user emoji */}
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: "spring", stiffness: 200, damping: 12, delay: 0.2 }}
               className="text-5xl mb-6 text-center"
             >
-              <span className="drop-shadow-lg">🔓</span>
+              <span className="drop-shadow-lg">{authenticatedUser ? USER_CREDENTIALS[authenticatedUser].emoji : '🔓'}</span>
             </motion.div>
 
             {/* Main headline */}
@@ -90,7 +95,7 @@ const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
               transition={{ delay: 0.3 }}
               className="text-2xl md:text-3xl font-serif text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-pink-500 to-rose-600 dark:from-rose-400 dark:via-pink-300 dark:to-rose-400 mb-2 font-bold tracking-wide text-center"
             >
-              The World Of Bilvin
+              Hi, {authenticatedUser ? USER_CREDENTIALS[authenticatedUser].displayName : 'Sayang'}! 💕
             </motion.h2>
 
             {/* Access granted subtitle */}
@@ -100,7 +105,7 @@ const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
               transition={{ delay: 0.4 }}
               className="text-xs uppercase tracking-[0.3em] text-rose-400 dark:text-rose-500 mb-6 font-medium"
             >
-              Access Granted
+              Welcome to Our World
             </motion.p>
 
             {/* Special italic welcome text */}
@@ -111,7 +116,7 @@ const SecretGate: React.FC<SecretGateProps> = ({ onUnlock }) => {
               className="font-serif italic text-base md:text-lg text-stone-600 dark:text-stone-300 mb-8 leading-relaxed"
             >
               <span className="text-rose-500 dark:text-rose-400">"</span>
-              Welcome to the world of{' '}
+              Selamat datang di dunia{' '}
               <span className="font-bold bg-gradient-to-r from-rose-500 to-pink-500 dark:from-rose-400 dark:to-pink-400 bg-clip-text text-transparent">BILVIN</span>
               <span className="text-rose-500 dark:text-rose-400">"</span>
             </motion.p>

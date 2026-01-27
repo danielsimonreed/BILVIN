@@ -34,10 +34,12 @@ const MusicPage: React.FC<MusicPageProps> = ({
 
       {/* Vinyl Record */}
       <div className="relative w-48 h-48 mb-8 aspect-square flex-shrink-0">
-        <motion.div
-          animate={{ rotate: isPlaying ? 360 : 0 }}
-          transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatType: "loop" }}
+        <div
           className="w-full h-full aspect-square rounded-full bg-stone-900 dark:bg-black shadow-2xl flex items-center justify-center border-4 border-stone-800 dark:border-slate-800"
+          style={{
+            animation: 'spin 3s linear infinite',
+            animationPlayState: isPlaying ? 'running' : 'paused'
+          }}
         >
           {/* Vinyl Grooves */}
           <div className="absolute inset-2 rounded-full border border-stone-800 opacity-50" />
@@ -46,19 +48,22 @@ const MusicPage: React.FC<MusicPageProps> = ({
 
           {/* Label */}
           <div className="w-24 h-24 rounded-full bg-rose-300 flex items-center justify-center relative overflow-hidden">
-            <motion.div
+            <div
               className="absolute inset-0 bg-gradient-to-tr from-rose-400 to-rose-200"
-              animate={{ rotate: isPlaying ? 360 : 0 }}
-              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              style={{
+                animation: 'spin 3s linear infinite',
+                animationPlayState: isPlaying ? 'running' : 'paused'
+              }}
             />
             <span className="relative text-[8px] font-bold text-rose-900 tracking-widest uppercase z-10">BILVIN Records</span>
           </div>
-        </motion.div>
+        </div>
 
         {/* Tone arm simulation */}
         <motion.div
           animate={{ rotate: isPlaying ? 25 : 0 }}
-          className="absolute -top-10 -right-10 w-32 h-40 origin-top-right transition-transform duration-700"
+          transition={{ duration: 0.7, ease: "easeInOut" }}
+          className="absolute -top-10 -right-10 w-32 h-40 origin-top-right"
         >
           <svg width="100%" height="100%" viewBox="0 0 100 120">
             <path d="M90,10 L90,30 L40,100" stroke="#57534e" strokeWidth="6" fill="none" />

@@ -132,13 +132,13 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
           </div>
         </section>
 
-        {/* Account / Lock */}
+        {/* Account / Log Out */}
         <button
           onClick={onLock}
-          className="mt-4 w-full py-4 bg-stone-200 dark:bg-slate-800 rounded-xl text-stone-600 dark:text-slate-400 font-medium hover:bg-rose-100 hover:text-rose-500 dark:hover:bg-slate-700 dark:hover:text-rose-400 transition-colors flex items-center justify-center gap-2"
+          className="mt-4 w-full py-4 bg-stone-200 dark:bg-slate-800 rounded-xl text-stone-600 dark:text-slate-400 font-medium hover:bg-red-100 hover:text-red-500 dark:hover:bg-red-900/30 dark:hover:text-red-400 transition-colors flex items-center justify-center gap-2"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" /></svg>
-          Lock App
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" /></svg>
+          Log Out
         </button>
 
         <div className="text-center mt-4">
