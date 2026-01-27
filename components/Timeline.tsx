@@ -39,6 +39,8 @@ const Timeline: React.FC<TimelineProps> = ({ onLogout, onReadyChange, hasSeenWel
   }, [hasSeenWelcome, onReadyChange]);
 
   const handleReady = () => {
+    // Scroll to top to show the header and countdown section
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (onWelcomeSeen) {
       onWelcomeSeen();
     }

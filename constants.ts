@@ -138,6 +138,11 @@ export interface Song {
 
 export const PLAYLIST: Song[] = [
   {
+    title: "Stuck",
+    artist: "LANY",
+    file: "LANY_Stuck.mp3"
+  },
+  {
     title: "anything 4 u",
     artist: "LANY",
     file: "LANY_anything_4_u.mp3"
@@ -145,11 +150,11 @@ export const PLAYLIST: Song[] = [
   {
     title: "The Archer",
     artist: "Taylor Swift",
-    file: "Taylor Swift - The Archer.mp3"
+    file: "Taylor_Swift_The_Archer.mp3"
   },
   {
     title: "My Sweet Baby",
     artist: "ONE OK ROCK",
-    file: "ONE OK ROCK - My Sweet Baby.mp3"
+    file: "ONE_OK_ROCK_My_Sweet_Baby.mp3"
   }
 ];

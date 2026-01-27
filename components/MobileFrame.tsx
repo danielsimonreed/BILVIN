@@ -67,7 +67,7 @@ const MobileFrame: React.FC<MobileFrameProps> = ({
 
         {/* Bottom Nav Bar Slot - Fixed absolute to simulate phone UI */}
         {bottomBar && (
-          <div className="absolute bottom-0 left-0 right-0 z-50 pointer-events-none">
+          <div className="absolute bottom-0 left-0 right-0 z-[100] pointer-events-none">
             {/* Wrapper to allow pointer events on the bar itself */}
             <div className="w-full h-full pointer-events-auto">
               {bottomBar}

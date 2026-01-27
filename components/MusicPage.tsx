@@ -133,7 +133,7 @@ const MusicPage: React.FC<MusicPageProps> = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.8 }}
-        className="w-full max-w-md mt-8"
+        className="w-full max-w-md mt-8 relative z-0"
       >
         <iframe
           data-testid="embed-iframe"
@@ -177,7 +177,7 @@ const MusicPage: React.FC<MusicPageProps> = ({
                 <span className="text-rose-500 dark:text-rose-300 font-bold text-sm">1</span>
               </div>
               <p className="text-left text-stone-700 dark:text-rose-100/90 leading-relaxed text-sm">
-                "<strong className="font-semibold text-rose-600 dark:text-rose-300">anything 4 u</strong>" dan "<strong className="font-semibold text-rose-600 dark:text-rose-300">My Sweet Baby</strong>" itu cara aku kaya bilang kalo aku <strong className="font-semibold text-rose-600 dark:text-rose-300">selalu ada buat kamu</strong>, InsyaAllah.. 💝
+                "<strong className="font-semibold text-rose-600 dark:text-rose-300">Stuck</strong>" dari LANY itu bukan cuma lagu random, tapi itu <strong className="font-semibold text-rose-600 dark:text-rose-300">representasi perasaan aku</strong> ke kamu.. Aku tuh beneran <strong className="font-semibold text-rose-600 dark:text-rose-300">"stuck" sama kamu</strong>, ngga bisa berhenti mikirin kamu, dan ngga mau lepas dari kamu.
               </p>
             </div>
 
@@ -187,7 +187,7 @@ const MusicPage: React.FC<MusicPageProps> = ({
                 <span className="text-rose-500 dark:text-rose-300 font-bold text-sm">2</span>
               </div>
               <p className="text-left text-stone-700 dark:text-rose-100/90 leading-relaxed text-sm">
-                "<strong className="font-semibold text-rose-600 dark:text-rose-300">The Archer</strong>"… itu lagu favorit kamu dari si teteh, yaa kan? 😛 Karena aku mau jadi <strong className="font-semibold text-rose-600 dark:text-rose-300">tempat pulang kamu</strong>, bahkan saat dunia ngga berpihak sama kamu, <strong className="font-semibold text-rose-600 dark:text-rose-300">cantik</strong>.. 🏠💕
+                "<strong className="font-semibold text-rose-600 dark:text-rose-300">anything 4 u</strong>" dan "<strong className="font-semibold text-rose-600 dark:text-rose-300">My Sweet Baby</strong>" itu cara aku kaya bilang kalo aku <strong className="font-semibold text-rose-600 dark:text-rose-300">selalu ada buat kamu</strong>, InsyaAllah..
               </p>
             </div>
 
@@ -197,7 +197,17 @@ const MusicPage: React.FC<MusicPageProps> = ({
                 <span className="text-rose-500 dark:text-rose-300 font-bold text-sm">3</span>
               </div>
               <p className="text-left text-stone-700 dark:text-rose-100/90 leading-relaxed text-sm">
-                Dan ngga lupa aku juga tambahin playlist lagu favorit kamu di Spotify, yang kamu buat saat kamu jatuh cinta sama seseorang… <strong className="font-semibold text-rose-600 dark:text-rose-300">termasuk aku</strong> 🥰
+                "<strong className="font-semibold text-rose-600 dark:text-rose-300">The Archer</strong>"… itu lagu favorit kamu dari si teteh, yaa kan? 😛 Karena aku mau jadi <strong className="font-semibold text-rose-600 dark:text-rose-300">tempat pulang kamu</strong>, bahkan saat dunia ngga berpihak sama kamu, <strong className="font-semibold text-rose-600 dark:text-rose-300">cantik</strong>.
+              </p>
+            </div>
+
+            {/* Fact 4 */}
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-rose-100 dark:bg-rose-900/50 flex items-center justify-center">
+                <span className="text-rose-500 dark:text-rose-300 font-bold text-sm">4</span>
+              </div>
+              <p className="text-left text-stone-700 dark:text-rose-100/90 leading-relaxed text-sm">
+                Dan ngga lupa aku juga tambahin playlist lagu favorit kamu di Spotify, yang kamu buat saat kamu jatuh cinta sama seseorang. Dan tentunya aku berharap supaya kamu bisa tetap <strong className="font-semibold text-rose-600 dark:text-rose-300">jatuh cinta</strong> sama aku setiap harinya
               </p>
             </div>
           </div>
