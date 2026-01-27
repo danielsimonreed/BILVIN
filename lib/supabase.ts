@@ -123,7 +123,7 @@ export const wishlistService = {
 
 // Image upload to Supabase Storage
 export const storageService = {
-    async uploadImage(file: File, userId: string): Promise<string | null> {
+    async uploadImage(file: File, userId: string): Promise<{ data: string | null; error: any }> {
         const fileExt = file.name.split('.').pop();
         const fileName = `${userId}-${Date.now()}.${fileExt}`;
         const filePath = `wishlist-images/${fileName}`;
@@ -134,14 +134,14 @@ export const storageService = {
 
         if (uploadError) {
             console.error('Error uploading image:', uploadError);
-            return null;
+            return { data: null, error: uploadError };
         }
 
         const { data } = supabase.storage
             .from('wishlist')
             .getPublicUrl(filePath);
 
-        return data.publicUrl;
+        return { data: data.publicUrl, error: null };
     },
 
     async deleteImage(imageUrl: string): Promise<boolean> {
