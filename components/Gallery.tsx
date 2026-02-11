@@ -114,56 +114,91 @@ const Gallery: React.FC = () => {
   // Check if image is a GIF
   const isGif = (src: string) => src.toLowerCase().endsWith('.gif');
 
+  // Split images into rows for the "Wall of Marquees"
+  const chunkSize = Math.ceil(GALLERY_IMAGES.length / 4);
+  const rows = [
+    GALLERY_IMAGES.slice(0, chunkSize),
+    GALLERY_IMAGES.slice(chunkSize, chunkSize * 2),
+    GALLERY_IMAGES.slice(chunkSize * 2, chunkSize * 3),
+    GALLERY_IMAGES.slice(chunkSize * 3)
+  ];
+
+  const renderMarqueeRow = (images: string[], direction: 'left' | 'right', speed: number, rowIndex: number) => {
+    // Duplicate multiple times to ensure it covers wide screens and loops smoothly without gaps
+    const marqueeImages = [...images, ...images, ...images, ...images];
+
+    return (
+      <div
+        key={rowIndex}
+        className="relative w-full overflow-hidden group py-2 sm:py-4"
+        style={{
+          maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
+        }}
+      >
+        <style>{`
+          @keyframes scroll-${rowIndex} {
+            0% { transform: translateX(${direction === 'left' ? '0' : '-50%'}); }
+            100% { transform: translateX(${direction === 'left' ? '-50%' : '0'}); }
+          }
+          .marquee-track-${rowIndex} {
+            animation: scroll-${rowIndex} ${speed}s linear infinite;
+            width: max-content;
+            display: flex;
+            gap: 1.5rem;
+          }
+          .marquee-track-${rowIndex}:hover {
+            animation-play-state: paused;
+          }
+        `}</style>
+
+        <div className={`marquee-track-${rowIndex} px-4 opacity-85`}>
+          {marqueeImages.map((imageSrc, index) => (
+            <div
+              key={`${rowIndex}-${index}`}
+              className="flex-shrink-0 relative w-64 h-40 sm:w-80 sm:h-52 rounded-xl overflow-hidden cursor-pointer hover:scale-105 hover:opacity-100 transition-all duration-300 border border-white/20 dark:border-white/10 hover:border-rose-400/60 shadow-lg hover:shadow-2xl hover:shadow-rose-500/20"
+              onClick={() => {
+                // Find original index for the lightbox
+                const originalIndex = GALLERY_IMAGES.indexOf(imageSrc);
+                if (originalIndex !== -1) openPreview(originalIndex);
+              }}
+            >
+              <img
+                src={imageSrc}
+                alt={`Gallery ${index}`}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+              {isGif(imageSrc) && (
+                <div className="absolute top-3 left-3 px-2 py-1 rounded-full bg-rose-500/90 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                  GIF
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="pt-20 px-4 pb-32"
+      className="pt-20 pb-32 overflow-x-hidden min-h-screen"
     >
-      <div className="text-center mb-8">
-        <h1 className="font-serif text-3xl text-stone-800 dark:text-rose-50">Our Gallery</h1>
-        <p className="font-sans text-rose-400 text-sm italic mt-2">Captured moments 💕</p>
-        <p className="font-sans text-stone-500 dark:text-stone-400 text-xs mt-1">{GALLERY_IMAGES.length} memories</p>
+      <div className="text-center mb-10 px-4 pt-6">
+        <h1 className="font-serif text-3xl md:text-5xl text-stone-800 dark:text-rose-50 mb-2 drop-shadow-sm">Our Gallery</h1>
+        <p className="font-sans text-stone-500 text-sm md:text-base italic">Seamless memories in motion 💕</p>
+        <p className="font-sans text-rose-400 font-medium text-xs mt-2 bg-white/50 dark:bg-black/20 inline-block px-3 py-1 rounded-full backdrop-blur-sm shadow-sm">{GALLERY_IMAGES.length} moments captured</p>
       </div>
 
-      {/* Gallery Grid */}
-      <div className="columns-2 gap-3 space-y-3">
-        {GALLERY_IMAGES.map((imageSrc, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: Math.min(index * 0.03, 1) }}
-            className="break-inside-avoid relative group rounded-xl overflow-hidden shadow-md bg-white dark:bg-slate-800 cursor-pointer"
-            onClick={() => openPreview(index)}
-          >
-            <img
-              src={imageSrc}
-              alt={`Photo ${index + 1}`}
-              className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-500"
-              loading="lazy"
-            />
-            {/* GIF indicator */}
-            {isGif(imageSrc) && (
-              <div className="absolute top-2 left-2 px-2 py-1 rounded-full bg-rose-500/90 text-white text-[10px] font-bold uppercase tracking-wider">
-                GIF
-              </div>
-            )}
-            {/* Hover overlay with zoom icon */}
-            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                </svg>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-        {/* Heart placeholder */}
-        <motion.div className="break-inside-avoid h-32 bg-rose-100 dark:bg-rose-900/20 rounded-xl flex items-center justify-center text-rose-300">
-          <span className="text-2xl">❤️</span>
-        </motion.div>
+      <div className="flex flex-col space-y-8 md:space-y-12 py-6">
+        {renderMarqueeRow(rows[0], 'left', 120, 0)}
+        {renderMarqueeRow(rows[1], 'right', 140, 1)}
+        {renderMarqueeRow(rows[2], 'left', 130, 2)}
+        {rows[3].length > 0 && renderMarqueeRow(rows[3], 'right', 150, 3)}
       </div>
 
       {/* Fullscreen Image Preview Modal */}

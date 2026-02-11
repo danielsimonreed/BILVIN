@@ -345,9 +345,9 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
 
     const categories: { id: CategoryType; label: string; icon: string }[] = [
         { id: 'all', label: 'Semua', icon: '' },
-        { id: 'travel', label: 'Travel', icon: '✈️' },
-        { id: 'couple', label: 'Couple', icon: '💑' },
-        { id: 'life', label: 'Life', icon: '🏠' }
+        { id: 'travel', label: 'Travel', icon: '' },
+        { id: 'couple', label: 'Couple', icon: '' },
+        { id: 'life', label: 'Life', icon: '' }
     ];
 
     const emojiOptions = ['✨', '💕', '🌟', '🎯', '🎁', '🌈', '🎵', '📚', '🎨', '🏆', '💪', '🌺', '✈️', '🏠', '💍', '🐱', '👶', '🎉', '💰', '🌸'];
