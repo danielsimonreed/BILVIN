@@ -190,7 +190,7 @@ const Gallery: React.FC = () => {
     >
       <div className="text-center mb-10 px-4 pt-6">
         <h1 className="font-serif text-3xl md:text-5xl text-stone-800 dark:text-rose-50 mb-2 drop-shadow-sm">Our Gallery</h1>
-        <p className="font-sans text-stone-500 text-sm md:text-base italic">Galeri milik BilVin 💕</p>
+        <p className="font-sans text-stone-500 text-sm md:text-base italic">Galeri milik Bilvin 💕</p>
         <p className="font-sans text-rose-400 font-medium text-xs mt-2 bg-white/50 dark:bg-black/20 inline-block px-3 py-1 rounded-full backdrop-blur-sm shadow-sm">{GALLERY_IMAGES.length} momen bersamamu</p>
       </div>
 

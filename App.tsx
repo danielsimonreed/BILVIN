@@ -11,6 +11,7 @@ import SettingsPage from './components/SettingsPage';
 import SecretNotification from './components/SecretNotification';
 import SecretMessagePage from './components/SecretMessagePage';
 import VoiceMessagePage from './components/VoiceMessagePage';
+import ValentineSurprise from './components/ValentineSurprise';
 
 import { UserProvider } from './contexts/UserContext';
 
@@ -34,6 +35,7 @@ const App: React.FC = () => {
   const [showSecretPage, setShowSecretPage] = useState(false);
   const [showVoicePage, setShowVoicePage] = useState(false);
   const [isMenuCollapsed, setIsMenuCollapsed] = useState(false);
+  const [showValentineSurprise, setShowValentineSurprise] = useState(false);
   const [isTimelineReady, setIsTimelineReady] = useState(false);
   // Track if user has seen the welcome message (persists across tab changes)
   const [hasSeenWelcome, setHasSeenWelcome] = useState(false);
@@ -149,19 +151,35 @@ const App: React.FC = () => {
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
-  // Auto-play music when unlocked
+  // Valentine Surprise — date-gated, shows once per session during Feb 11-14
   useEffect(() => {
-    if (isUnlocked && !showSecretPage && !showVoicePage) {
+    if (isUnlocked) {
+      const now = new Date();
+      const month = now.getMonth(); // 0-indexed: Jan=0, Feb=1
+      const day = now.getDate();
+      const year = now.getFullYear();
+      const isValentineWindow = year === 2026 && month === 1 && day >= 11 && day <= 14;
+      const alreadySeenThisSession = sessionStorage.getItem('valentineSurprise2026Seen') === 'true';
+
+      if (isValentineWindow && !alreadySeenThisSession) {
+        setTimeout(() => setShowValentineSurprise(true), 800);
+      }
+    }
+  }, [isUnlocked]);
+
+  // Auto-play music when unlocked (skip if valentine surprise is showing)
+  useEffect(() => {
+    if (isUnlocked && !showSecretPage && !showVoicePage && !showValentineSurprise) {
       // Small delay to ensure browser acknowledges the user interaction from the unlock click
       setTimeout(() => {
         setIsPlaying(true);
       }, 100);
     }
-  }, [isUnlocked]);
+  }, [isUnlocked, showValentineSurprise]);
 
   // Pause/Resume music when secret or voice page is opened/closed
   useEffect(() => {
-    const isSpecialPageOpen = showSecretPage || showVoicePage;
+    const isSpecialPageOpen = showSecretPage || showVoicePage || showValentineSurprise;
 
     if (isSpecialPageOpen) {
       // Pause music when entering special pages
@@ -179,7 +197,7 @@ const App: React.FC = () => {
         wasPlayingBeforePause.current = false;
       }
     }
-  }, [showSecretPage, showVoicePage]);
+  }, [showSecretPage, showVoicePage, showValentineSurprise]);
 
   // Handle scroll to trigger notification
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -318,6 +336,13 @@ const App: React.FC = () => {
             <div key="content-area" className="w-full h-full relative">
               {renderContent()}
             </div>
+          )}
+        </AnimatePresence>
+
+        {/* Valentine Surprise Overlay */}
+        <AnimatePresence>
+          {showValentineSurprise && (
+            <ValentineSurprise onDismiss={() => setShowValentineSurprise(false)} />
           )}
         </AnimatePresence>
       </MobileFrame>
