@@ -9,6 +9,29 @@ interface WishlistPageProps {
 
 type CategoryType = 'all' | 'travel' | 'couple' | 'life';
 
+const formatBudget = (amount: number) => {
+    // Handle potential string numbers just in case
+    const num = Number(amount);
+    if (isNaN(num)) return `Rp. ${amount}`;
+
+    if (num >= 999999999) {
+        // >= 1 Milyar (approx, to catch 1000jt cases)
+        const val = parseFloat((num / 1000000000).toFixed(1));
+        return `Rp. ${val} m`;
+    }
+    if (num >= 1000000) {
+        // >= 1 Juta
+        const val = parseFloat((num / 1000000).toFixed(1));
+        return `Rp. ${val} jt`;
+    }
+    if (num >= 1000) {
+        // >= 1 Ribu
+        const val = parseFloat((num / 1000).toFixed(1));
+        return `Rp. ${val} rb`;
+    }
+    return `Rp. ${num}`;
+};
+
 const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
     const [wishlist, setWishlist] = useState<WishlistItemDB[]>([]);
     const [activeCategory, setActiveCategory] = useState<CategoryType>('all');
@@ -576,7 +599,7 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
                                                 </span>
                                                 {item.budget && (
                                                     <span className="text-[10px] text-green-600 dark:text-green-400">
-                                                        💰 {(item.budget / 1000000).toFixed(1)}jt
+                                                        💰 {formatBudget(item.budget)}
                                                     </span>
                                                 )}
                                                 {item.lokasi && (
