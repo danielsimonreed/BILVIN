@@ -330,13 +330,13 @@ const DetailedCounter = () => {
   return (
     <div className="flex flex-col items-center">
       <div className="flex justify-center items-center">
-        <TimeUnit value={time.days} label="Days" />
+        <TimeUnit value={time.days} label="Hari" />
         <span className="text-rose-300 -mt-4">:</span>
-        <TimeUnit value={time.hours} label="Hrs" />
+        <TimeUnit value={time.hours} label="Jam" />
         <span className="text-rose-300 -mt-4">:</span>
-        <TimeUnit value={time.minutes} label="Min" />
+        <TimeUnit value={time.minutes} label="Menit" />
         <span className="text-rose-300 -mt-4">:</span>
-        <TimeUnit value={time.seconds} label="Sec" />
+        <TimeUnit value={time.seconds} label="Detik" />
       </div>
     </div>
   );

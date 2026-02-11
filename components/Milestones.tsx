@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MILESTONES } from '../constants';
+import MonthlyAnniversary from './MonthlyAnniversary';
 
 const Milestones: React.FC = () => {
     const [selectedDate, setSelectedDate] = useState<string>('');
@@ -371,6 +372,9 @@ const Milestones: React.FC = () => {
                     "Semoga akan segera datang banyak kenangan indah yang akan kita buat bareng.."
                 </p>
             </motion.div>
+
+            {/* Monthly Anniversary Tracker */}
+            <MonthlyAnniversary />
         </div>
     );
 };
