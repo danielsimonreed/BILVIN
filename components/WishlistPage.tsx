@@ -344,7 +344,7 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
         : wishlist.filter(item => item.category === activeCategory);
 
     const categories: { id: CategoryType; label: string; icon: string }[] = [
-        { id: 'all', label: 'Semua', icon: '💫' },
+        { id: 'all', label: 'Semua', icon: '' },
         { id: 'travel', label: 'Travel', icon: '✈️' },
         { id: 'couple', label: 'Couple', icon: '💑' },
         { id: 'life', label: 'Life', icon: '🏠' }
@@ -389,7 +389,7 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="flex gap-2 mb-4"
+                className="flex gap-2 mb-4 justify-center"
                 style={{ overflow: 'hidden' }}
             >
                 {categories.map((cat) => (
@@ -412,10 +412,10 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="mb-4"
+                    className="mb-4 flex justify-center w-full"
                 >
                     {isDragMode ? (
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2 w-full">
                             <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/30 rounded-xl border border-amber-200 dark:border-amber-800">
                                 <span className="text-xl">✋</span>
                                 <div className="flex-1">
@@ -589,27 +589,22 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
                                             </div>
 
                                             {/* Compact metadata row */}
-                                            <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                                                {/* Category Badge */}
-                                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${item.category === 'travel' ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300' :
-                                                    item.category === 'couple' ? 'bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-300' :
-                                                        'bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-300'
-                                                    }`}>
-                                                    {item.category === 'travel' ? '✈️' : item.category === 'couple' ? '💑' : '🏠'}
-                                                </span>
+                                            <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                                                {/* Category Badge Removed as requested */}
+
                                                 {item.budget && (
-                                                    <span className="text-[10px] text-green-600 dark:text-green-400">
+                                                    <span className="text-xs font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-2 py-0.5 rounded-md flex items-center gap-1">
                                                         💰 {formatBudget(item.budget)}
                                                     </span>
                                                 )}
                                                 {item.lokasi && (
-                                                    <span className="text-[10px] text-blue-600 dark:text-blue-400 truncate max-w-[80px]">
+                                                    <span className="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md flex items-center gap-1">
                                                         📍 {item.lokasi}
                                                     </span>
                                                 )}
                                                 {item.target_date && (
-                                                    <span className="text-[10px] text-purple-600 dark:text-purple-400">
-                                                        📅 {new Date(item.target_date).toLocaleDateString('id-ID', { month: 'short', year: '2-digit' })}
+                                                    <span className="text-xs font-medium text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                                        📅 {new Date(item.target_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                                                     </span>
                                                 )}
                                             </div>
