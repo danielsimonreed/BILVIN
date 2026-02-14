@@ -9,39 +9,38 @@ interface ValentineSurpriseProps {
 
 const LETTER_PAGES = [
     {
-        title: "Bilqis, sayangkuuu 🤍",
+        title: "Halo Sayangkuuu, Bilqis 🤍",
         body: `Happy Valentine's Day sayangg. Jujur ini kali pertama aku ngerayain yang namanya 'Valentine Day', dan itu bareng kamu.. yeayyy.. Tapi terlepas dari apapun makna hari spesial ini, menurut aku setiap hari bareng kamu itu hari special, aku bisa tenang karena aku tau dan sadar kalau kamu milik aku seorang, aku bisa ngechat kamu tanpa kuatir ada orang lain yang marah, dan aku bisa cium dan peluk kamu kapanpun hehe.. wlee
 
 I love you so much.. kata ini mungkin udah sering banget aku bilang sayang, tapi emang bener, aku sayang banget sama kamu, not only words, but you always in my mind, everyday and everytime. Kamu selalu jadi semangat buatkuuu, cantik..!`,
-        emoji: "�",
     },
     {
         title: "Beruntungnya Aku...",
         body: `Makasih yang sayang selalu kasih energi positif buat aku, beruntungnya aku punya kamu yang cantik banget kaya bidadari (jangan ngelakk :p), baik kaya si bawang putih, dan perhatian banget sama aku. Terus jadi diri kamu sendiri ya sayang, i love you so so soooooomayy 🤍
 
 Aku nulis ini sambil senyum-senyum sendiri tau, karena jujur ajaa sayangg… aku bersyukur banget bisa sampai di titik ini bareng kamu.`,
-        emoji: "🌹",
+
     },
     {
         title: "5 Bulan Bareng Kamu",
         body: `Ngga kerasa yaa.. udah 5 bulan kita ngejalanin hubungan ini bareng. Mungkin buat orang lain itu masih dibilang "baru", atau belum lama, tapi buatku, 5 bulan ini justru terasa cepet banget, ngga berasa aja, ngga tau yaa.. aku sih ngerasa mungkin karena selama 5 bulan bareng kamu, hidup aku dipenuhin rasa bahagia, jadinya terasa cepet dan nyaman banget jalaninnya hehe :p
 
 Kita udah ngelewatin banyak hal, banyak cerita, banyak tawa, mungkin juga beberapa drama kecil yang justru bikin kita makin ngerti satu sama lain. And I'm really grateful for every single moment.`,
-        emoji: "✨",
+
     },
     {
         title: "Kamu Semangat Aku",
         body: `Aku mau kamu tau, aku sayang banget sama kamu. Kamu itu selalu jadi semangat aku buat lakuin hal-hal baru, buat achieve sesuatu yang lebih baik di hidup aku. Kamu bikin aku pengen jadi versi terbaik dari diri aku sendiri.
 
 Aku mau terus sama kamu. Aku pengen hubungan ini panjang. Bukan hanya sekedar pacaran, tapi aku mau nikah sama kamu. Aaaaminnn.. Semoga kamupun punya angan angan yang sama kaya akuu… please stay with me, grow with me. Aku mau jadi yang terakhir buat kamu. Aku ngga mau kehilangan kamu, ngga bisa kebayang juga kalau harus tanpa kamu :(`,
-        emoji: "💍",
+
     },
     {
         title: "Your Safe Place",
         body: `Aku mau selalu ada di sisi kamu, waktu kamu lagi down, capek, overthinking, atau lagi happy banget dan pengen cerita semua hal random. I want to be your safe place, and I hope I can always call you mine too.
 
 Aku juga pengen kamu terus nemenin aku ngewujudin semua wishlist kita satu satu. Yang kita tulis panjang listnya di chat WA, yang kita juga tulis di website onlyforbilqis itu… semua mimpi kecil sampai mimpi besar kita. Aku pengen satu-satu kita gapai bareng bareng. Pelan-pelan, tapi harus bareng!!`,
-        emoji: "🏡",
+
     },
     {
         title: "Happy Valentine's Day 🤍",
@@ -50,7 +49,11 @@ Aku juga pengen kamu terus nemenin aku ngewujudin semua wishlist kita satu satu.
 I love you so much, Bilqisku sayangg. More than I can explain in words.
 
 Happy Valentine's Day, my favorite person 🤍`,
-        emoji: "💝",
+    },
+    {
+        title: "Jadi..",
+        body: `sekarang aku minta kamu, maukah kamu update tweet kamu ini? hehe`,
+        image: "/images/valentine-tweet-old-iqis.png",
         isFinale: true,
     },
 ];
@@ -455,16 +458,6 @@ const ValentineSurprise: React.FC<ValentineSurpriseProps> = ({ onDismiss }) => {
                                     exit={{ opacity: 0, x: -40 }}
                                     transition={{ duration: 0.4 }}
                                 >
-                                    {/* Page emoji */}
-                                    <motion.div
-                                        className="text-3xl mb-3 text-center"
-                                        initial={{ scale: 0, rotate: -180 }}
-                                        animate={{ scale: 1, rotate: 0 }}
-                                        transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-                                    >
-                                        {LETTER_PAGES[currentPage].emoji}
-                                    </motion.div>
-
                                     {/* Page title */}
                                     <motion.h2
                                         className="font-serif text-xl sm:text-2xl text-center text-stone-800 dark:text-rose-100 mb-5"
@@ -474,6 +467,22 @@ const ValentineSurprise: React.FC<ValentineSurpriseProps> = ({ onDismiss }) => {
                                     >
                                         {LETTER_PAGES[currentPage].title}
                                     </motion.h2>
+
+                                    {/* Optional image */}
+                                    {LETTER_PAGES[currentPage].image && (
+                                        <motion.div
+                                            className="mb-4 flex justify-center"
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ delay: 0.4, duration: 0.5 }}
+                                        >
+                                            <img
+                                                src={LETTER_PAGES[currentPage].image}
+                                                alt="Valentine surprise"
+                                                className="rounded-2xl shadow-lg shadow-rose-200/40 dark:shadow-rose-900/30 max-h-48 w-auto object-contain border-2 border-rose-100/60 dark:border-rose-800/40"
+                                            />
+                                        </motion.div>
+                                    )}
 
                                     {/* Typewriter body */}
                                     <div className="flex-1">
