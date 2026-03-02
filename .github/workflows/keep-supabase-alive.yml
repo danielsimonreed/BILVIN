@@ -1,0 +1,36 @@
+# Keep Supabase Database Alive
+# This workflow prevents the Supabase free-tier database from auto-pausing
+# by running a lightweight query every 5 days.
+# Supabase pauses databases after 7 days of inactivity on the free plan.
+
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # Runs every 5 days at 00:00 UTC (well within the 7-day pause window)
+    - cron: '0 0 */5 * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase Database
+        run: |
+          echo "🏓 Pinging Supabase to prevent auto-pause..."
+          
+          # Simple REST API call to query the database
+          # This counts rows in the wishlist_items table (lightweight query)
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/wishlist_items?select=count&limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
+          
+          if [ "$RESPONSE" -eq 200 ]; then
+            echo "✅ Supabase is alive! HTTP Status: $RESPONSE"
+          else
+            echo "❌ Supabase ping failed! HTTP Status: $RESPONSE"
+            exit 1
+          fi
+          
+          echo "📅 Next ping scheduled in ~5 days"
