@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence, useAnimation } from 'framer-motion';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ValentineSurpriseProps {
     onDismiss: () => void;
@@ -170,13 +170,13 @@ const TypewriterText: React.FC<{ text: string; onComplete?: () => void }> = ({ t
 
 // ─── CONFETTI BURST (finale) ─────────────────────────────────────────
 const ConfettiBurst: React.FC = () => {
-    const confetti = Array.from({ length: 30 }, (_, i) => ({
+    const confetti = useMemo(() => Array.from({ length: 30 }, (_, i) => ({
         id: i,
         x: Math.random() * 100,
         delay: Math.random() * 0.5,
         emoji: ['✨', '💕', '🌹', '💖', '🎀', '💗', '🌸'][Math.floor(Math.random() * 7)],
         size: 12 + Math.random() * 14,
-    }));
+    })), []);
 
     return (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -248,25 +248,25 @@ const ValentineSurprise: React.FC<ValentineSurpriseProps> = ({ onDismiss }) => {
     };
 
     // ── Floating hearts data (persistent across phases)
-    const hearts = Array.from({ length: 12 }, (_, i) => ({
+    const hearts = useMemo(() => Array.from({ length: 12 }, (_, i) => ({
         id: i,
         delay: i * 0.8,
         size: 16 + Math.random() * 20,
         x: Math.random() * 100,
-    }));
+    })), []);
 
-    const sparkles = Array.from({ length: 8 }, (_, i) => ({
+    const sparkles = useMemo(() => Array.from({ length: 8 }, (_, i) => ({
         id: i,
         delay: i * 0.6 + Math.random(),
         x: 10 + Math.random() * 80,
         y: 10 + Math.random() * 80,
-    }));
+    })), []);
 
-    const petals = Array.from({ length: 10 }, (_, i) => ({
+    const petals = useMemo(() => Array.from({ length: 10 }, (_, i) => ({
         id: i,
         delay: i * 0.7,
         x: Math.random() * 100,
-    }));
+    })), []);
 
     return (
         <motion.div

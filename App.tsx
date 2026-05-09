@@ -1,25 +1,33 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { Suspense, useState, useEffect, useRef, useMemo } from 'react';
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
 import MobileFrame from './components/MobileFrame';
 import SecretGate from './components/SecretGate';
 import Timeline from './components/Timeline';
 import LineArtBackground from './components/LineArtBackground';
 import BottomNav from './components/BottomNav';
-import Gallery from './components/Gallery';
-import MusicPage from './components/MusicPage';
-import SettingsPage from './components/SettingsPage';
 import SecretNotification from './components/SecretNotification';
-import SecretMessagePage from './components/SecretMessagePage';
-import VoiceMessagePage from './components/VoiceMessagePage';
-import ValentineSurprise from './components/ValentineSurprise';
-
-import { UserProvider } from './contexts/UserContext';
-
-import Milestones from './components/Milestones';
-import WishlistPage from './components/WishlistPage';
 import { PLAYLIST, UserType } from './constants';
+import { prefetchAudio, runWhenIdle } from './lib/media';
 
 type TabType = 'story' | 'gallery' | 'milestones' | 'wishlist' | 'music' | 'settings';
+
+const loadGallery = () => import('./components/Gallery');
+const loadMusicPage = () => import('./components/MusicPage');
+const loadSettingsPage = () => import('./components/SettingsPage');
+const loadSecretMessagePage = () => import('./components/SecretMessagePage');
+const loadVoiceMessagePage = () => import('./components/VoiceMessagePage');
+const loadValentineSurprise = () => import('./components/ValentineSurprise');
+const loadMilestones = () => import('./components/Milestones');
+const loadWishlistPage = () => import('./components/WishlistPage');
+
+const Gallery = React.lazy(loadGallery);
+const MusicPage = React.lazy(loadMusicPage);
+const SettingsPage = React.lazy(loadSettingsPage);
+const SecretMessagePage = React.lazy(loadSecretMessagePage);
+const VoiceMessagePage = React.lazy(loadVoiceMessagePage);
+const ValentineSurprise = React.lazy(loadValentineSurprise);
+const Milestones = React.lazy(loadMilestones);
+const WishlistPage = React.lazy(loadWishlistPage);
 
 const App: React.FC = () => {
 
@@ -49,25 +57,58 @@ const App: React.FC = () => {
   // Create a persistent Audio instance that lives outside of React's render cycle
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const hasInitializedAudio = useRef(false);
+  const notificationAudioRef = useRef<HTMLAudioElement | null>(null);
   // Track if music was playing before pausing for special pages
   const wasPlayingBeforePause = useRef(false);
+  const lastCollapsedState = useRef(false);
+  const hasTriggeredNotification = useRef(false);
+  const scrollRafRef = useRef<number | null>(null);
+  const valentineTimeoutRef = useRef<number | null>(null);
+  const autoplayTimeoutRef = useRef<number | null>(null);
+  const resumeTimeoutRef = useRef<number | null>(null);
+  const prefetchedTrackRefs = useRef<Map<number, HTMLAudioElement>>(new Map());
+  const currentTrack = useMemo(() => PLAYLIST[currentTrackIndex], [currentTrackIndex]);
 
   // Initialize audio once on mount
   useEffect(() => {
     if (!hasInitializedAudio.current) {
       audioRef.current = new Audio(`/music/${PLAYLIST[0]?.file}`);
+      audioRef.current.preload = 'metadata';
       audioRef.current.volume = 0.4;
       audioRef.current.addEventListener('ended', () => {
         setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length);
       });
+      notificationAudioRef.current = new Audio('/notification.mp3');
+      notificationAudioRef.current.preload = 'auto';
       hasInitializedAudio.current = true;
     }
 
     return () => {
+      if (scrollRafRef.current !== null) {
+        cancelAnimationFrame(scrollRafRef.current);
+      }
+      if (valentineTimeoutRef.current !== null) {
+        clearTimeout(valentineTimeoutRef.current);
+      }
+      if (autoplayTimeoutRef.current !== null) {
+        clearTimeout(autoplayTimeoutRef.current);
+      }
+      if (resumeTimeoutRef.current !== null) {
+        clearTimeout(resumeTimeoutRef.current);
+      }
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
       }
+      if (notificationAudioRef.current) {
+        notificationAudioRef.current.pause();
+        notificationAudioRef.current = null;
+      }
+      prefetchedTrackRefs.current.forEach((audio) => {
+        audio.pause();
+        audio.src = '';
+      });
+      prefetchedTrackRefs.current.clear();
     };
   }, []);
 
@@ -76,12 +117,55 @@ const App: React.FC = () => {
     if (audioRef.current && hasInitializedAudio.current) {
       const wasPlaying = !audioRef.current.paused;
       audioRef.current.src = `/music/${PLAYLIST[currentTrackIndex]?.file}`;
+      audioRef.current.preload = 'metadata';
       audioRef.current.load();
       if (wasPlaying || isPlaying) {
         audioRef.current.play().catch(e => console.error("Track change play failed", e));
       }
     }
   }, [currentTrackIndex]);
+
+  useEffect(() => {
+    if (!currentTrack) {
+      return;
+    }
+
+    const currentIndex = currentTrackIndex;
+    const nextIndex = (currentIndex + 1) % PLAYLIST.length;
+    const nextTrack = PLAYLIST[nextIndex];
+
+    const cancelIdle = runWhenIdle(() => {
+      if (!nextTrack || prefetchedTrackRefs.current.has(nextIndex)) {
+        return;
+      }
+
+      const prefetchedAudio = prefetchAudio(`/music/${nextTrack.file}`);
+      if (prefetchedAudio) {
+        prefetchedTrackRefs.current.set(nextIndex, prefetchedAudio);
+      }
+    });
+
+    return cancelIdle;
+  }, [currentTrack, currentTrackIndex]);
+
+  useEffect(() => {
+    if (!isUnlocked) {
+      return;
+    }
+
+    const cancelIdlePrefetch = runWhenIdle(() => {
+      void loadGallery();
+      void loadMilestones();
+      void loadWishlistPage();
+      void loadMusicPage();
+      void loadSettingsPage();
+      void loadSecretMessagePage();
+      void loadVoiceMessagePage();
+      void loadValentineSurprise();
+    }, 2000);
+
+    return cancelIdlePrefetch;
+  }, [isUnlocked]);
 
   // Handle play/pause changes
   useEffect(() => {
@@ -140,6 +224,16 @@ const App: React.FC = () => {
     localStorage.setItem('bilvin-reduced-motion', String(reducedMotion));
   }, [reducedMotion]);
 
+  useEffect(() => {
+    if (!isUnlocked) {
+      hasTriggeredNotification.current = false;
+      lastCollapsedState.current = false;
+      setHasScrolled(false);
+      setShowNotification(false);
+      setIsMenuCollapsed(false);
+    }
+  }, [isUnlocked]);
+
   // Toggle Dark Mode class on body
   useEffect(() => {
     if (isDarkMode) {
@@ -162,7 +256,7 @@ const App: React.FC = () => {
       const alreadySeenThisSession = sessionStorage.getItem('valentineSurprise2026Seen') === 'true';
 
       if (isValentineWindow && !alreadySeenThisSession) {
-        setTimeout(() => setShowValentineSurprise(true), 800);
+        valentineTimeoutRef.current = window.setTimeout(() => setShowValentineSurprise(true), 800);
       }
     }
   }, [isUnlocked]);
@@ -171,11 +265,16 @@ const App: React.FC = () => {
   useEffect(() => {
     if (isUnlocked && !showSecretPage && !showVoicePage && !showValentineSurprise) {
       // Small delay to ensure browser acknowledges the user interaction from the unlock click
-      setTimeout(() => {
+      autoplayTimeoutRef.current = window.setTimeout(() => {
         setIsPlaying(true);
       }, 100);
     }
-  }, [isUnlocked, showValentineSurprise]);
+    return () => {
+      if (autoplayTimeoutRef.current !== null) {
+        clearTimeout(autoplayTimeoutRef.current);
+      }
+    };
+  }, [isUnlocked, showSecretPage, showVoicePage, showValentineSurprise]);
 
   // Pause/Resume music when secret or voice page is opened/closed
   useEffect(() => {
@@ -191,31 +290,50 @@ const App: React.FC = () => {
     } else {
       // Resume music when leaving special pages (if it was playing before)
       if (wasPlayingBeforePause.current) {
-        setTimeout(() => {
+        resumeTimeoutRef.current = window.setTimeout(() => {
           setIsPlaying(true);
         }, 100);
         wasPlayingBeforePause.current = false;
       }
     }
+    return () => {
+      if (resumeTimeoutRef.current !== null) {
+        clearTimeout(resumeTimeoutRef.current);
+      }
+    };
   }, [showSecretPage, showVoicePage, showValentineSurprise]);
 
   // Handle scroll to trigger notification
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    setIsMenuCollapsed(scrollTop > 50);
+    const currentTarget = e.currentTarget;
 
-    if (!hasScrolled && isUnlocked && isTimelineReady && activeTab === 'story') {
-      // Calculate true scroll progress (0 to 1)
-      const maxScroll = scrollHeight - clientHeight;
-      const scrollPercentage = maxScroll > 0 ? scrollTop / maxScroll : 0;
-
-      if (scrollPercentage > 0.8) {
-        setHasScrolled(true);
-        setShowNotification(true);
-        const audio = new Audio('/notification.mp3');
-        audio.play().catch(e => console.log('Audio play failed', e));
-      }
+    if (scrollRafRef.current !== null) {
+      return;
     }
+
+    scrollRafRef.current = requestAnimationFrame(() => {
+      scrollRafRef.current = null;
+
+      const { scrollTop, scrollHeight, clientHeight } = currentTarget;
+      const shouldCollapse = scrollTop > 50;
+
+      if (lastCollapsedState.current !== shouldCollapse) {
+        lastCollapsedState.current = shouldCollapse;
+        setIsMenuCollapsed(shouldCollapse);
+      }
+
+      if (!hasTriggeredNotification.current && isUnlocked && isTimelineReady && activeTab === 'story') {
+        const maxScroll = scrollHeight - clientHeight;
+        const scrollPercentage = maxScroll > 0 ? scrollTop / maxScroll : 0;
+
+        if (scrollPercentage > 0.8) {
+          hasTriggeredNotification.current = true;
+          setHasScrolled(true);
+          setShowNotification(true);
+          notificationAudioRef.current?.play().catch(err => console.log('Audio play failed', err));
+        }
+      }
+    });
   };
 
   const handleNotificationClick = () => {
@@ -226,15 +344,21 @@ const App: React.FC = () => {
   // Render the active view
   const renderContent = () => {
     if (showVoicePage) {
-      return <VoiceMessagePage onBack={() => setShowVoicePage(false)} />;
+      return (
+        <Suspense fallback={<div className="w-full h-full" />}>
+          <VoiceMessagePage onBack={() => setShowVoicePage(false)} />
+        </Suspense>
+      );
     }
 
     if (showSecretPage) {
       return (
-        <SecretMessagePage
-          onBack={() => setShowSecretPage(false)}
-          onOpenVoice={() => setShowVoicePage(true)}
-        />
+        <Suspense fallback={<div className="w-full h-full" />}>
+          <SecretMessagePage
+            onBack={() => setShowSecretPage(false)}
+            onOpenVoice={() => setShowVoicePage(true)}
+          />
+        </Suspense>
       );
     }
 
@@ -249,39 +373,55 @@ const App: React.FC = () => {
           />
         );
       case 'gallery':
-        return <Gallery />;
+        return (
+          <Suspense fallback={<div className="w-full h-full" />}>
+            <Gallery />
+          </Suspense>
+        );
       case 'milestones':
-        return <Milestones />;
+        return (
+          <Suspense fallback={<div className="w-full h-full" />}>
+            <Milestones />
+          </Suspense>
+        );
       case 'wishlist':
-        return <WishlistPage currentUser={currentUser} />;
+        return (
+          <Suspense fallback={<div className="w-full h-full" />}>
+            <WishlistPage currentUser={currentUser} />
+          </Suspense>
+        );
       case 'music':
         return (
-          <MusicPage
-            isPlaying={isPlaying}
-            onTogglePlay={togglePlay}
-            onNext={nextTrack}
-            onPrev={prevTrack}
-            currentTrackIndex={currentTrackIndex}
-            volume={volume}
-            onVolumeChange={handleVolumeChange}
-          />
+          <Suspense fallback={<div className="w-full h-full" />}>
+            <MusicPage
+              isPlaying={isPlaying}
+              onTogglePlay={togglePlay}
+              onNext={nextTrack}
+              onPrev={prevTrack}
+              currentTrackIndex={currentTrackIndex}
+              volume={volume}
+              onVolumeChange={handleVolumeChange}
+            />
+          </Suspense>
         );
       case 'settings':
         return (
-          <SettingsPage
-            isDarkMode={isDarkMode}
-            toggleTheme={toggleTheme}
-            onLock={() => {
-              setCurrentUser(null);
-              setIsUnlocked(false);
-              setHasSeenWelcome(false);
-              setActiveTab('story');
-            }}
-            textSize={textSize}
-            setTextSize={setTextSize}
-            reducedMotion={reducedMotion}
-            setReducedMotion={setReducedMotion}
-          />
+          <Suspense fallback={<div className="w-full h-full" />}>
+            <SettingsPage
+              isDarkMode={isDarkMode}
+              toggleTheme={toggleTheme}
+              onLock={() => {
+                setCurrentUser(null);
+                setIsUnlocked(false);
+                setHasSeenWelcome(false);
+                setActiveTab('story');
+              }}
+              textSize={textSize}
+              setTextSize={setTextSize}
+              reducedMotion={reducedMotion}
+              setReducedMotion={setReducedMotion}
+            />
+          </Suspense>
         );
       default:
         return (
@@ -324,7 +464,10 @@ const App: React.FC = () => {
         }
         onScroll={handleScroll}
       >
-        <LineArtBackground isDarkMode={isDarkMode} />
+        <LineArtBackground
+          isDarkMode={isDarkMode}
+          shouldAnimate={!showSecretPage && !showVoicePage && !showValentineSurprise}
+        />
 
         <AnimatePresence mode="wait">
           {!isUnlocked ? (
@@ -342,7 +485,9 @@ const App: React.FC = () => {
         {/* Valentine Surprise Overlay */}
         <AnimatePresence>
           {showValentineSurprise && (
-            <ValentineSurprise onDismiss={() => setShowValentineSurprise(false)} />
+            <Suspense fallback={null}>
+              <ValentineSurprise onDismiss={() => setShowValentineSurprise(false)} />
+            </Suspense>
           )}
         </AnimatePresence>
       </MobileFrame>

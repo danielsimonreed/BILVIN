@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 
 interface VoiceMessagePageProps {
@@ -11,6 +11,26 @@ const VoiceMessagePage: React.FC<VoiceMessagePageProps> = ({ onBack }) => {
     const [duration, setDuration] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const floatingHearts = useMemo(
+        () => Array.from({ length: 6 }, (_, i) => ({
+            id: i,
+            x: `${15 + i * 15}%`,
+            duration: 8 + i * 2,
+            delay: i * 1.5
+        })),
+        []
+    );
+    const waveformBars = useMemo(
+        () => Array.from({ length: 12 }, (_, i) => ({
+            id: i,
+            idleHeight: 8,
+            minHeight: 8 + Math.random() * 16,
+            maxHeight: 24 + Math.random() * 24,
+            duration: 0.4 + Math.random() * 0.3,
+            delay: i * 0.05
+        })),
+        []
+    );
 
     useEffect(() => {
         audioRef.current = new Audio('/voice/forbilqis.m4a');
@@ -68,22 +88,22 @@ const VoiceMessagePage: React.FC<VoiceMessagePageProps> = ({ onBack }) => {
             {/* Animated Background Elements */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 {/* Floating Hearts */}
-                {[...Array(6)].map((_, i) => (
+                {floatingHearts.map((heart) => (
                     <motion.div
-                        key={i}
+                        key={heart.id}
                         initial={{
                             opacity: 0,
                             y: '100vh',
-                            x: `${15 + i * 15}%`
+                            x: heart.x
                         }}
                         animate={{
                             opacity: [0, 0.6, 0.6, 0],
                             y: '-20vh',
                         }}
                         transition={{
-                            duration: 8 + i * 2,
+                            duration: heart.duration,
                             repeat: Infinity,
-                            delay: i * 1.5,
+                            delay: heart.delay,
                             ease: 'easeOut'
                         }}
                         className="absolute text-2xl"
@@ -98,20 +118,20 @@ const VoiceMessagePage: React.FC<VoiceMessagePageProps> = ({ onBack }) => {
                     transition={{ duration: 1.5, repeat: Infinity }}
                     className="absolute top-10 left-1/2 -translate-x-1/2 flex items-end gap-1"
                 >
-                    {[...Array(12)].map((_, i) => (
+                    {waveformBars.map((bar) => (
                         <motion.div
-                            key={i}
+                            key={bar.id}
                             animate={isPlaying ? {
-                                height: [8 + Math.random() * 16, 24 + Math.random() * 24, 8 + Math.random() * 16],
-                            } : { height: 8 }}
+                                height: [bar.minHeight, bar.maxHeight, bar.minHeight],
+                            } : { height: bar.idleHeight }}
                             transition={{
-                                duration: 0.4 + Math.random() * 0.3,
+                                duration: bar.duration,
                                 repeat: Infinity,
                                 ease: 'easeInOut',
-                                delay: i * 0.05
+                                delay: bar.delay
                             }}
                             className="w-1 bg-gradient-to-t from-rose-400 to-pink-300 dark:from-rose-500 dark:to-pink-400 rounded-full"
-                            style={{ height: 8 }}
+                            style={{ height: bar.idleHeight }}
                         />
                     ))}
                 </motion.div>

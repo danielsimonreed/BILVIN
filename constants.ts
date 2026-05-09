@@ -5,11 +5,12 @@ export type UserType = 'bilqis' | 'kevin';
 export interface UserCredential {
   password: string;
   displayName: string;
+  emoji: string;
 }
 
 export const USER_CREDENTIALS: Record<UserType, UserCredential> = {
-  bilqis: { password: 'ruby', displayName: 'Bilqis' },
-  kevin: { password: 'wibowo', displayName: 'Kevin' }
+  bilqis: { password: 'ruby', displayName: 'Bilqis', emoji: '💖' },
+  kevin: { password: 'wibowo', displayName: 'Kevin', emoji: '✨' }
 };
 
 // Helper function to authenticate and get user type

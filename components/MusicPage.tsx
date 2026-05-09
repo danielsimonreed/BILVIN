@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { PLAYLIST } from '../constants';
 
@@ -22,6 +22,29 @@ const MusicPage: React.FC<MusicPageProps> = ({
   onVolumeChange
 }) => {
   const currentSong = PLAYLIST[currentTrackIndex];
+  const spotifyRef = useRef<HTMLDivElement | null>(null);
+  const [showSpotifyEmbed, setShowSpotifyEmbed] = useState(false);
+
+  useEffect(() => {
+    const node = spotifyRef.current;
+    if (!node || typeof IntersectionObserver === 'undefined') {
+      setShowSpotifyEmbed(true);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShowSpotifyEmbed(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '240px 0px' }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <motion.div
@@ -139,18 +162,23 @@ const MusicPage: React.FC<MusicPageProps> = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.8 }}
         className="w-full max-w-md mt-8 relative z-0"
+        ref={spotifyRef}
       >
-        <iframe
-          data-testid="embed-iframe"
-          style={{ borderRadius: '12px' }}
-          src="https://open.spotify.com/embed/playlist/7bXAH68eQA1YkgtmN2CJzv?utm_source=generator"
-          width="100%"
-          height="352"
-          frameBorder={0}
-          allowFullScreen
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy"
-        />
+        {showSpotifyEmbed ? (
+          <iframe
+            data-testid="embed-iframe"
+            style={{ borderRadius: '12px' }}
+            src="https://open.spotify.com/embed/playlist/7bXAH68eQA1YkgtmN2CJzv?utm_source=generator"
+            width="100%"
+            height="352"
+            frameBorder={0}
+            allowFullScreen
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-[352px] rounded-xl bg-white/50 dark:bg-slate-800/40 border border-white/30 dark:border-white/10 animate-pulse" />
+        )}
       </motion.div>
 
       {/* Fun Fact Style Note */}

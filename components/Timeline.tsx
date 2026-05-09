@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TimelineStep from './TimelineStep';
 import { TIMELINE_STEPS, CLOSING_MESSAGE } from '../constants';
@@ -12,6 +12,15 @@ interface TimelineProps {
 
 const Timeline: React.FC<TimelineProps> = ({ onLogout, onReadyChange, hasSeenWelcome = false, onWelcomeSeen }) => {
   const [showScrollGuide, setShowScrollGuide] = useState(true);
+  const floatingHearts = useMemo(() => (
+    Array.from({ length: 5 }, (_, i) => ({
+      id: i,
+      left: `${15 + i * 18}%`,
+      startX: `${Math.random() * 100}%`,
+      duration: 8 + Math.random() * 4,
+      delay: i * 2
+    }))
+  ), []);
 
   useEffect(() => {
     // Hide scroll guide after 5 seconds or on scroll
@@ -21,9 +30,10 @@ const Timeline: React.FC<TimelineProps> = ({ onLogout, onReadyChange, hasSeenWel
 
     const handleScroll = () => {
       setShowScrollGuide(false);
+      window.removeEventListener('scroll', handleScroll, true);
     };
 
-    window.addEventListener('scroll', handleScroll, true);
+    window.addEventListener('scroll', handleScroll, { capture: true, passive: true });
 
     return () => {
       clearTimeout(timer);
@@ -138,12 +148,12 @@ const Timeline: React.FC<TimelineProps> = ({ onLogout, onReadyChange, hasSeenWel
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
         >
-          {[...Array(5)].map((_, i) => (
+          {floatingHearts.map((heart) => (
             <motion.div
-              key={i}
+              key={heart.id}
               className="absolute text-rose-300/30 dark:text-rose-600/30 text-2xl"
               initial={{
-                x: Math.random() * 100 + '%',
+                x: heart.startX,
                 y: '100%',
                 opacity: 0
               }}
@@ -152,12 +162,12 @@ const Timeline: React.FC<TimelineProps> = ({ onLogout, onReadyChange, hasSeenWel
                 opacity: [0, 0.8, 0]
               }}
               transition={{
-                duration: 8 + Math.random() * 4,
+                duration: heart.duration,
                 repeat: Infinity,
-                delay: i * 2,
+                delay: heart.delay,
                 ease: "linear"
               }}
-              style={{ left: `${15 + i * 18}%` }}
+              style={{ left: heart.left }}
             >
               💗
             </motion.div>

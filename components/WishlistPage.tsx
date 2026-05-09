@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, Reorder, useDragControls } from 'framer-motion';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { UserType, USER_CREDENTIALS } from '../constants';
 import { wishlistService, storageService, isSupabaseConfigured, WishlistItemDB } from '../lib/supabase';
 
@@ -8,6 +8,34 @@ interface WishlistPageProps {
 }
 
 type CategoryType = 'all' | 'travel' | 'couple' | 'life';
+
+const categories: { id: CategoryType; label: string; icon: string }[] = [
+    { id: 'all', label: 'Semua', icon: '' },
+    { id: 'travel', label: 'Travel', icon: '' },
+    { id: 'couple', label: 'Couple', icon: '' },
+    { id: 'life', label: 'Life', icon: '' }
+];
+
+const formCategories = [
+    { id: 'travel', label: 'Travel', icon: '✈️' },
+    { id: 'couple', label: 'Couple', icon: '💑' },
+    { id: 'life', label: 'Life', icon: '🏠' }
+] as const;
+
+const emojiOptions = ['✨', '💕', '🌟', '🎯', '🎁', '🌈', '🎵', '📚', '🎨', '🏆', '💪', '🌺', '✈️', '🏠', '💍', '🐱', '👶', '🎉', '💰', '🌸'];
+
+const mergeReorderedItems = (
+    wishlist: WishlistItemDB[],
+    reorderedItems: WishlistItemDB[],
+    activeCategory: CategoryType
+) => {
+    if (activeCategory === 'all') {
+        return reorderedItems;
+    }
+
+    const otherItems = wishlist.filter(item => item.category !== activeCategory);
+    return [...reorderedItems, ...otherItems];
+};
 
 const formatBudget = (amount: number) => {
     // Handle potential string numbers just in case
@@ -43,6 +71,9 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
     const [showCelebration, setShowCelebration] = useState(false);
     const [isDragMode, setIsDragMode] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const toastTimeoutRef = useRef<number | null>(null);
+    const celebrationTimeoutRef = useRef<number | null>(null);
+    const pendingOrderRef = useRef<WishlistItemDB[] | null>(null);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -87,6 +118,17 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
         }
     }, [currentUser]);
 
+    useEffect(() => {
+        return () => {
+            if (toastTimeoutRef.current !== null) {
+                clearTimeout(toastTimeoutRef.current);
+            }
+            if (celebrationTimeoutRef.current !== null) {
+                clearTimeout(celebrationTimeoutRef.current);
+            }
+        };
+    }, []);
+
     const loadWishlist = async () => {
         setIsLoading(true);
         if (isSupabaseConfigured()) {
@@ -104,7 +146,10 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
 
     const showToast = (message: string, type: 'success' | 'info') => {
         setToast({ message, type });
-        setTimeout(() => setToast(null), 3000);
+        if (toastTimeoutRef.current !== null) {
+            clearTimeout(toastTimeoutRef.current);
+        }
+        toastTimeoutRef.current = window.setTimeout(() => setToast(null), 3000);
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,6 +158,9 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
             if (file.size > 5 * 1024 * 1024) {
                 showToast('Ukuran file maksimal 5MB', 'info');
                 return;
+            }
+            if (formData.imagePreview.startsWith('blob:')) {
+                URL.revokeObjectURL(formData.imagePreview);
             }
             setFormData(prev => ({
                 ...prev,
@@ -123,6 +171,9 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
     };
 
     const resetForm = () => {
+        if (formData.imagePreview.startsWith('blob:')) {
+            URL.revokeObjectURL(formData.imagePreview);
+        }
         setFormData({
             emoji: '✨',
             title: '',
@@ -266,7 +317,10 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
         // Show celebration when marking as complete
         if (isMarkingComplete) {
             setShowCelebration(true);
-            setTimeout(() => setShowCelebration(false), 3500);
+            if (celebrationTimeoutRef.current !== null) {
+                clearTimeout(celebrationTimeoutRef.current);
+            }
+            celebrationTimeoutRef.current = window.setTimeout(() => setShowCelebration(false), 3500);
         }
     };
 
@@ -306,51 +360,51 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
     };
 
     // Handle reordering of wishlist items
-    const handleReorder = async (reorderedItems: WishlistItemDB[]) => {
-        // Update local state immediately for smooth UX
-        if (activeCategory === 'all') {
-            setWishlist(reorderedItems);
-        } else {
-            // When filtering by category, we need to merge back
-            const otherItems = wishlist.filter(item => item.category !== activeCategory);
-            const newOrder = [...reorderedItems, ...otherItems];
-            setWishlist(newOrder);
-        }
+    const handleReorder = (reorderedItems: WishlistItemDB[]) => {
+        const updatedWishlist = mergeReorderedItems(wishlist, reorderedItems, activeCategory);
+        pendingOrderRef.current = updatedWishlist;
+        setWishlist(updatedWishlist);
+    };
 
-        // Persist to database
+    // Save order when exiting drag mode
+    const handleSaveOrder = async () => {
+        const itemsToPersist = pendingOrderRef.current || wishlist;
+
         if (isSupabaseConfigured()) {
-            const orderUpdates = reorderedItems.map((item, index) => ({
+            const orderUpdates = itemsToPersist.map((item, index) => ({
                 id: item.id,
                 sort_order: index
             }));
             await wishlistService.updateOrder(orderUpdates);
         } else {
-            // localStorage fallback
-            const updatedWishlist = activeCategory === 'all'
-                ? reorderedItems
-                : [...reorderedItems, ...wishlist.filter(item => item.category !== activeCategory)];
-            localStorage.setItem('bilvin-wishlist-v2', JSON.stringify(updatedWishlist));
+            localStorage.setItem('bilvin-wishlist-v2', JSON.stringify(itemsToPersist));
         }
-    };
 
-    // Save order when exiting drag mode
-    const handleSaveOrder = () => {
+        pendingOrderRef.current = null;
         setIsDragMode(false);
         showToast('Urutan berhasil disimpan! ✨', 'success');
     };
 
-    const filteredWishlist = activeCategory === 'all'
+    const filteredWishlist = useMemo(() => (activeCategory === 'all'
         ? wishlist
-        : wishlist.filter(item => item.category === activeCategory);
+        : wishlist.filter(item => item.category === activeCategory)), [activeCategory, wishlist]);
 
-    const categories: { id: CategoryType; label: string; icon: string }[] = [
-        { id: 'all', label: 'Semua', icon: '' },
-        { id: 'travel', label: 'Travel', icon: '' },
-        { id: 'couple', label: 'Couple', icon: '' },
-        { id: 'life', label: 'Life', icon: '' }
-    ];
+    const celebrationParticles = useMemo(() => (
+        Array.from({ length: 50 }, (_, i) => ({
+            id: i,
+            x: (Math.random() - 0.5) * 400,
+            rise: -200 - Math.random() * 200,
+            fall: 400,
+            size: 10 + Math.random() * 10,
+            borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+            color: ['#f43f5e', '#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#fbbf24'][Math.floor(Math.random() * 7)],
+            rotation: Math.random() * 720 - 360,
+            duration: 2.5 + Math.random(),
+            delay: Math.random() * 0.3
+        }))
+    ), []);
 
-    const emojiOptions = ['✨', '💕', '🌟', '🎯', '🎁', '🌈', '🎵', '📚', '🎨', '🏆', '💪', '🌺', '✈️', '🏠', '💍', '🐱', '👶', '🎉', '💰', '🌸'];
+
 
     const formatDate = (dateStr: string) => {
         const date = new Date(dateStr);
@@ -713,9 +767,9 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
                         className="fixed inset-0 z-[200] pointer-events-none flex items-center justify-center"
                     >
                         {/* Confetti particles */}
-                        {[...Array(50)].map((_, i) => (
+                        {celebrationParticles.map((particle) => (
                             <motion.div
-                                key={i}
+                                key={particle.id}
                                 initial={{
                                     opacity: 1,
                                     x: 0,
@@ -724,24 +778,24 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
                                 }}
                                 animate={{
                                     opacity: [1, 1, 0],
-                                    x: (Math.random() - 0.5) * 400,
-                                    y: [0, -200 - Math.random() * 200, 400],
+                                    x: particle.x,
+                                    y: [0, particle.rise, particle.fall],
                                     scale: [0, 1, 0.5],
-                                    rotate: Math.random() * 720 - 360
+                                    rotate: particle.rotation
                                 }}
                                 transition={{
-                                    duration: 2.5 + Math.random() * 1,
+                                    duration: particle.duration,
                                     ease: "easeOut",
-                                    delay: Math.random() * 0.3
+                                    delay: particle.delay
                                 }}
                                 className="absolute"
                                 style={{
                                     left: '50%',
                                     top: '40%',
-                                    width: 10 + Math.random() * 10,
-                                    height: 10 + Math.random() * 10,
-                                    borderRadius: Math.random() > 0.5 ? '50%' : '2px',
-                                    backgroundColor: ['#f43f5e', '#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#fbbf24'][Math.floor(Math.random() * 7)]
+                                    width: particle.size,
+                                    height: particle.size,
+                                    borderRadius: particle.borderRadius,
+                                    backgroundColor: particle.color
                                 }}
                             />
                         ))}
@@ -897,11 +951,7 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ currentUser }) => {
                             <div className="mb-4">
                                 <label className="text-sm text-stone-600 dark:text-stone-400 mb-2 block">Kategori</label>
                                 <div className="flex gap-2">
-                                    {[
-                                        { id: 'travel', label: 'Travel', icon: '✈️' },
-                                        { id: 'couple', label: 'Couple', icon: '💑' },
-                                        { id: 'life', label: 'Life', icon: '🏠' }
-                                    ].map((cat) => (
+                                    {formCategories.map((cat) => (
                                         <button
                                             key={cat.id}
                                             onClick={() => setFormData(prev => ({ ...prev, category: cat.id as 'travel' | 'couple' | 'life' }))}

@@ -210,7 +210,8 @@ const TimelineStep: React.FC<TimelineStepProps> = ({ heading, text, image, capti
                   src={image}
                   alt={heading}
                   className="w-full h-full object-cover"
-                  loading="eager"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-50" />
               </div>
