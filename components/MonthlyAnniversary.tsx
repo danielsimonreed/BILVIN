@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-
-const START_DATE = new Date("2025-09-09T00:00:00+07:00");
+import {
+    RELATIONSHIP_START_DATE,
+    addMonthsToRelationshipStart,
+    getAnniversaryState,
+} from '../lib/anniversary';
 
 interface MonthlyDate {
     date: Date;
@@ -15,10 +18,11 @@ interface MonthlyDate {
 const generateMonthlyDates = (): MonthlyDate[] => {
     const now = new Date();
     const dates: MonthlyDate[] = [];
+    const anniversaryState = getAnniversaryState(now);
 
     // Start date entry (month 0)
     dates.push({
-        date: new Date(START_DATE),
+        date: new Date(RELATIONSHIP_START_DATE),
         monthNumber: 0,
         label: 'Hari Jadian 💕',
         isUnlocked: true,
@@ -28,23 +32,23 @@ const generateMonthlyDates = (): MonthlyDate[] => {
 
     // Generate monthly dates from month 1 to 12
     for (let i = 1; i <= 12; i++) {
-        const d = new Date(START_DATE);
-        d.setMonth(d.getMonth() + i);
+        const d = addMonthsToRelationshipStart(i);
         const isUnlocked = now >= d;
+        const isCurrent = anniversaryState.isAnniversaryDay && anniversaryState.monthCount === i;
 
         dates.push({
             date: d,
             monthNumber: i,
             label: i === 12 ? '1 Tahun Anniversary! 🎊' : `${i} Bulan Anniversary`,
             isUnlocked,
-            isCurrent: false,
+            isCurrent,
             isStartDate: false,
         });
     }
 
     // Mark the most recent unlocked date as "current"
     const unlockedDates = dates.filter(d => d.isUnlocked && !d.isStartDate);
-    if (unlockedDates.length > 0) {
+    if (!anniversaryState.isAnniversaryDay && unlockedDates.length > 0) {
         const lastUnlocked = unlockedDates[unlockedDates.length - 1];
         lastUnlocked.isCurrent = true;
     }

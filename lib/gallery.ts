@@ -1,0 +1,43 @@
+export interface GalleryItem {
+  src: string;
+  isGif: boolean;
+}
+
+export const GALLERY_ITEMS: GalleryItem[] = [
+  { src: '/images/bilvin (1).webp', isGif: false },
+  { src: '/images/bilvin (2).webp', isGif: false },
+  { src: '/images/bilvin (3).webp', isGif: false },
+  { src: '/images/bilvin (4).webp', isGif: false },
+  { src: '/images/bilvin (5).webp', isGif: false },
+  { src: '/images/bilvin (6).webp', isGif: false },
+  { src: '/images/bilvin (7).webp', isGif: false },
+  { src: '/images/bilvin (8).webp', isGif: false },
+  { src: '/images/bilvin (9).webp', isGif: false },
+  { src: '/images/bilvin (10).webp', isGif: false },
+  { src: '/images/bilvin (11).webp', isGif: false },
+  { src: '/images/bilvin (12).webp', isGif: false },
+  { src: '/images/bilvin (13).webp', isGif: false },
+  { src: '/images/bilvin (14).webp', isGif: false },
+  { src: '/images/bilvin (15).webp', isGif: false },
+  { src: '/images/bilvin (16).webp', isGif: false },
+  { src: '/images/bilvin (17).webp', isGif: false },
+  { src: '/images/bilvin (18).webp', isGif: false },
+  { src: '/images/bilvin (19).webp', isGif: false },
+  { src: '/images/bilvin (20).webp', isGif: false },
+  { src: '/images/bilvin (21).webp', isGif: false },
+  { src: '/images/bilvin (22).webp', isGif: false },
+  { src: '/images/bilvin (23).webp', isGif: false },
+  { src: '/images/bilvin (24).webp', isGif: false },
+  { src: '/images/bilvin (25).webp', isGif: false },
+  { src: '/images/bilvin (26).webp', isGif: false },
+  { src: '/images/gif1.gif', isGif: true },
+  { src: '/images/gif2.gif', isGif: true },
+  { src: '/images/gif3.gif', isGif: true },
+  { src: '/images/gif4.gif', isGif: true },
+  { src: '/images/gif5.gif', isGif: true },
+  { src: '/images/jadian.jpg', isGif: false },
+  { src: '/images/photos3.jpg', isGif: false },
+  { src: '/images/photos8.jpg', isGif: false },
+  { src: '/images/photos10.jpg', isGif: false },
+  { src: '/images/photo12.jpg', isGif: false },
+];

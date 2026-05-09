@@ -7,6 +7,7 @@ import LineArtBackground from './components/LineArtBackground';
 import BottomNav from './components/BottomNav';
 import SecretNotification from './components/SecretNotification';
 import { PLAYLIST, UserType } from './constants';
+import { AnniversaryState, getAnniversaryState } from './lib/anniversary';
 import { prefetchAudio, runWhenIdle } from './lib/media';
 
 type TabType = 'story' | 'gallery' | 'milestones' | 'wishlist' | 'journal' | 'music' | 'settings';
@@ -217,6 +218,7 @@ const App: React.FC = () => {
     }
     return false;
   });
+  const [anniversaryState, setAnniversaryState] = useState<AnniversaryState>(() => getAnniversaryState());
 
   // Persist settings
   useEffect(() => {
@@ -226,6 +228,17 @@ const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('bilvin-reduced-motion', String(reducedMotion));
   }, [reducedMotion]);
+
+  useEffect(() => {
+    const syncAnniversaryState = () => {
+      setAnniversaryState(getAnniversaryState());
+    };
+
+    syncAnniversaryState();
+
+    const timer = window.setInterval(syncAnniversaryState, 60000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (!isUnlocked) {
@@ -245,6 +258,17 @@ const App: React.FC = () => {
       document.documentElement.classList.remove('dark');
     }
   }, [isDarkMode]);
+
+  useEffect(() => {
+    document.documentElement.dataset.anniversaryTier = anniversaryState.anniversaryTier;
+
+    if (anniversaryState.anniversaryTier === 'none') {
+      delete document.body.dataset.anniversaryTier;
+      return;
+    }
+
+    document.body.dataset.anniversaryTier = anniversaryState.anniversaryTier;
+  }, [anniversaryState.anniversaryTier]);
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
@@ -373,6 +397,8 @@ const App: React.FC = () => {
             onReadyChange={setIsTimelineReady}
             hasSeenWelcome={hasSeenWelcome}
             onWelcomeSeen={() => setHasSeenWelcome(true)}
+            anniversaryState={anniversaryState}
+            reducedMotion={reducedMotion}
           />
         );
       case 'gallery':
@@ -439,6 +465,8 @@ const App: React.FC = () => {
             onReadyChange={setIsTimelineReady}
             hasSeenWelcome={hasSeenWelcome}
             onWelcomeSeen={() => setHasSeenWelcome(true)}
+            anniversaryState={anniversaryState}
+            reducedMotion={reducedMotion}
           />
         );
     }
@@ -450,6 +478,7 @@ const App: React.FC = () => {
     <MotionConfig reducedMotion={reducedMotion ? "always" : "user"}>
       <MobileFrame
         isDarkMode={isDarkMode}
+        anniversaryState={anniversaryState}
         scrollRef={scrollRef}
         textSize={textSize}
         bottomBar={
@@ -499,6 +528,7 @@ const App: React.FC = () => {
             </Suspense>
           )}
         </AnimatePresence>
+
       </MobileFrame>
     </MotionConfig>
   );

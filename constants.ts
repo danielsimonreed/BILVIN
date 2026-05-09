@@ -2,6 +2,8 @@
 // User Authentication
 export type UserType = 'bilqis' | 'kevin';
 
+export { RELATIONSHIP_START_DATE, RELATIONSHIP_START_DATE_ISO } from './lib/anniversary';
+
 export interface UserCredential {
   password: string;
   displayName: string;
