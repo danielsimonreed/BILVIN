@@ -9,7 +9,7 @@ import SecretNotification from './components/SecretNotification';
 import { PLAYLIST, UserType } from './constants';
 import { prefetchAudio, runWhenIdle } from './lib/media';
 
-type TabType = 'story' | 'gallery' | 'milestones' | 'wishlist' | 'music' | 'settings';
+type TabType = 'story' | 'gallery' | 'milestones' | 'wishlist' | 'journal' | 'music' | 'settings';
 
 const loadGallery = () => import('./components/Gallery');
 const loadMusicPage = () => import('./components/MusicPage');
@@ -19,6 +19,7 @@ const loadVoiceMessagePage = () => import('./components/VoiceMessagePage');
 const loadValentineSurprise = () => import('./components/ValentineSurprise');
 const loadMilestones = () => import('./components/Milestones');
 const loadWishlistPage = () => import('./components/WishlistPage');
+const loadJournalPage = () => import('./components/JournalPage');
 
 const Gallery = React.lazy(loadGallery);
 const MusicPage = React.lazy(loadMusicPage);
@@ -28,6 +29,7 @@ const VoiceMessagePage = React.lazy(loadVoiceMessagePage);
 const ValentineSurprise = React.lazy(loadValentineSurprise);
 const Milestones = React.lazy(loadMilestones);
 const WishlistPage = React.lazy(loadWishlistPage);
+const JournalPage = React.lazy(loadJournalPage);
 
 const App: React.FC = () => {
 
@@ -157,6 +159,7 @@ const App: React.FC = () => {
       void loadGallery();
       void loadMilestones();
       void loadWishlistPage();
+      void loadJournalPage();
       void loadMusicPage();
       void loadSettingsPage();
       void loadSecretMessagePage();
@@ -388,6 +391,12 @@ const App: React.FC = () => {
         return (
           <Suspense fallback={<div className="w-full h-full" />}>
             <WishlistPage currentUser={currentUser} />
+          </Suspense>
+        );
+      case 'journal':
+        return (
+          <Suspense fallback={<div className="w-full h-full" />}>
+            <JournalPage currentUser={currentUser} />
           </Suspense>
         );
       case 'music':

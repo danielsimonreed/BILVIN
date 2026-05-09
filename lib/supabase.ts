@@ -5,7 +5,7 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('⚠️ Supabase credentials not found. Wishlist will work in offline mode.');
+    console.warn('⚠️ Supabase credentials not found. Shared features will work in offline mode.');
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -32,6 +32,19 @@ export interface WishlistItemDB {
     updated_by: 'bilqis' | 'kevin' | null;
     updated_at: string;
     sort_order: number | null; // For manual sorting/drag-drop
+}
+
+export type JournalMood = 'happy' | 'grateful' | 'miss_you' | 'soft' | 'excited';
+
+export interface JournalEntryDB {
+    id: string;
+    author: 'bilqis' | 'kevin';
+    mood: JournalMood;
+    title: string | null;
+    body: string;
+    image_url: string | null;
+    created_at: string;
+    updated_at: string;
 }
 
 // CRUD Operations for Wishlist
@@ -153,6 +166,78 @@ export const wishlistService = {
     }
 };
 
+export const journalService = {
+    async getAll(): Promise<JournalEntryDB[]> {
+        const { data, error } = await supabase
+            .from('journal_entries')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Error fetching journal entries:', error);
+            return [];
+        }
+
+        return data || [];
+    },
+
+    async create(entry: Omit<JournalEntryDB, 'id' | 'created_at' | 'updated_at'>): Promise<JournalEntryDB | null> {
+        const { data, error } = await supabase
+            .from('journal_entries')
+            .insert([entry])
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error creating journal entry:', error);
+            return null;
+        }
+
+        return data;
+    },
+
+    async update(id: string, updates: Partial<Pick<JournalEntryDB, 'mood' | 'title' | 'body' | 'image_url'>>): Promise<JournalEntryDB | null> {
+        const { data, error } = await supabase
+            .from('journal_entries')
+            .update({ ...updates, updated_at: new Date().toISOString() })
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error updating journal entry:', error);
+            return null;
+        }
+
+        return data;
+    },
+
+    async delete(id: string): Promise<boolean> {
+        const { error } = await supabase
+            .from('journal_entries')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            console.error('Error deleting journal entry:', error);
+            return false;
+        }
+
+        return true;
+    },
+
+    subscribeToChanges(callback: (payload: any) => void) {
+        return supabase
+            .channel('journal_changes')
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'journal_entries' },
+                callback
+            )
+            .subscribe();
+    }
+};
+
 // Image upload to Supabase Storage
 export const storageService = {
     async uploadImage(file: File, userId: string): Promise<{ data: string | null; error: any }> {
@@ -166,6 +251,27 @@ export const storageService = {
 
         if (uploadError) {
             console.error('Error uploading image:', uploadError);
+            return { data: null, error: uploadError };
+        }
+
+        const { data } = supabase.storage
+            .from('wishlist')
+            .getPublicUrl(filePath);
+
+        return { data: data.publicUrl, error: null };
+    },
+
+    async uploadJournalImage(file: File, userId: string): Promise<{ data: string | null; error: any }> {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${userId}-${Date.now()}.${fileExt}`;
+        const filePath = `journal-images/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+            .from('wishlist')
+            .upload(filePath, file);
+
+        if (uploadError) {
+            console.error('Error uploading journal image:', uploadError);
             return { data: null, error: uploadError };
         }
 
@@ -191,5 +297,9 @@ export const storageService = {
             return false;
         }
         return true;
+    },
+
+    async deleteJournalImage(imageUrl: string): Promise<boolean> {
+        return this.deleteImage(imageUrl);
     }
 };

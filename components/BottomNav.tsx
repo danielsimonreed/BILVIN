@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-type TabType = 'story' | 'gallery' | 'milestones' | 'wishlist' | 'music' | 'settings';
+type TabType = 'story' | 'gallery' | 'milestones' | 'wishlist' | 'journal' | 'music' | 'settings';
 
 interface BottomNavProps {
   activeTab: TabType;
@@ -50,6 +50,15 @@ const BottomNav: React.FC<BottomNavProps> = ({
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+        </svg>
+      )
+    },
+    {
+      id: 'journal',
+      label: 'Journal',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 3H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 16H8V5h11zm-15-1V7H3v11a2 2 0 0 0 2 2h11v-1H5a1 1 0 0 1-1-1zm5-9h7v1H9zm0 3h7v1H9zm0 3h5v1H9z" />
         </svg>
       )
     },
